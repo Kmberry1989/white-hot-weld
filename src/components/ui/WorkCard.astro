@@ -1,0 +1,33 @@
+---
+import { Image } from "astro:assets";
+import type { WorkSummary } from "../../types/ui";
+import styles from "./WorkCard.module.css";
+
+interface Props {
+  item: WorkSummary;
+  priority?: boolean;
+}
+
+const { item, priority = false } = Astro.props;
+const alt = `${item.title} welded metal artwork`;
+---
+
+<article class={styles.card}>
+  <a class={styles.link} href={`/work/${item.slug}`}>
+    <Image
+      src={item.coverImage}
+      alt={alt}
+      class={styles.image}
+      loading={priority ? "eager" : "lazy"}
+      fetchpriority={priority ? "high" : "auto"}
+      sizes="(min-width: 1200px) 33vw, (min-width: 700px) 50vw, 100vw"
+      width={1200}
+      height={800}
+    />
+    <div class={styles.body}>
+      <h3>{item.title}</h3>
+      <p class={styles.meta}>{item.year} · {item.materials}</p>
+      <p class={styles.excerpt}>{item.excerpt}</p>
+    </div>
+  </a>
+</article>

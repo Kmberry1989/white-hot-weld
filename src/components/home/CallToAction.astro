@@ -1,0 +1,17 @@
+---
+import Section from "../ui/Section.astro";
+import styles from "./CallToAction.module.css";
+
+interface Props {
+  title: string;
+  body: string;
+  buttonLabel: string;
+  buttonHref: string;
+}
+
+const { title, body, buttonLabel, buttonHref } = Astro.props;
+---
+
+<Section id="invitation" kicker="The Invitation" title={title} lede={body}>
+  <a class={styles.button} href={buttonHref}>{buttonLabel}</a>
+</Section>

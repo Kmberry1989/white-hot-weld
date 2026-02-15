@@ -1,0 +1,40 @@
+---
+import type { CtaLink, HeroMedia } from "../../types/ui";
+import PageContainer from "../layout/PageContainer.astro";
+import styles from "./Hero.module.css";
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle: string;
+  primaryCta: CtaLink;
+  secondaryCta?: CtaLink;
+  media?: HeroMedia;
+}
+
+const { eyebrow, title, subtitle, primaryCta, secondaryCta, media } = Astro.props;
+---
+
+<section class={styles.hero}>
+  <PageContainer size="wide" className={styles.container}>
+    <div class:list={[styles.copy, "fade-up"]}>
+      {eyebrow && <p class={styles.eyebrow}>{eyebrow}</p>}
+      <h1>{title}</h1>
+      <p class={styles.subtitle}>{subtitle}</p>
+      <div class={styles.actions}>
+        <a class={styles.primary} href={primaryCta.href}>{primaryCta.label}</a>
+        {secondaryCta && (
+          <a class={styles.secondary} href={secondaryCta.href}>
+            {secondaryCta.label}
+          </a>
+        )}
+      </div>
+    </div>
+
+    {media && (
+      <div class:list={[styles.mediaWrap, "fade-up"]}>
+        <img src={media.src} alt={media.alt} loading="eager" fetchpriority="high" class={styles.media} />
+      </div>
+    )}
+  </PageContainer>
+</section>

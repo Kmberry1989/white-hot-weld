@@ -1,0 +1,95 @@
+---
+import CallToAction from "../components/home/CallToAction.astro";
+import FeaturedWork from "../components/home/FeaturedWork.astro";
+import Hero from "../components/home/Hero.astro";
+import PeopleIntro from "../components/home/PeopleIntro.astro";
+import SiteLayout from "../components/layout/SiteLayout.astro";
+import Section from "../components/ui/Section.astro";
+import { getFeaturedWork, getPageContent } from "../lib/content";
+import type { Person } from "../types/ui";
+
+const home = await getPageContent("home");
+const about = await getPageContent("about");
+const gallery = await getPageContent("gallery");
+const contact = await getPageContent("contact");
+const featuredWork = await getFeaturedWork(3);
+
+if (!home.data.hero) {
+  throw new Error("Home page content requires a hero object in frontmatter.");
+}
+
+function parsePeople(markdown: string): Person[] {
+  const people: Person[] = [];
+  const lines = markdown.split("\n");
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("- ") || !trimmed.includes("|")) {
+      continue;
+    }
+
+    const [name, role, bio] = trimmed
+      .replace(/^-\s*/, "")
+      .split("|")
+      .map((part) => part.trim());
+
+    if (name && role && bio) {
+      people.push({ name, role, bio });
+    }
+  }
+
+  return people;
+}
+
+const people = parsePeople(about.body);
+const hero = home.data.hero;
+---
+
+<SiteLayout
+  title={home.data.title}
+  description={home.data.description}
+  seoTitle={home.data.seoTitle}
+  seoDescription={home.data.seoDescription}
+>
+  <Hero
+    eyebrow={home.data.eyebrow}
+    title={hero.title}
+    subtitle={hero.subtitle}
+    primaryCta={{ href: hero.primaryCtaHref, label: hero.primaryCtaLabel }}
+    secondaryCta={
+      hero.secondaryCtaHref && hero.secondaryCtaLabel
+        ? { href: hero.secondaryCtaHref, label: hero.secondaryCtaLabel }
+        : undefined
+    }
+    media={hero.mediaSrc && hero.mediaAlt ? { src: hero.mediaSrc, alt: hero.mediaAlt } : undefined}
+  />
+
+  <Section id="what-this-is" kicker="What This Is" title={home.data.title} lede={home.data.description}>
+    <p class="home-copy">{home.body}</p>
+  </Section>
+
+  <FeaturedWork
+    title={gallery.data.title}
+    intro={gallery.data.description}
+    items={featuredWork}
+    ctaHref="/gallery"
+    ctaLabel="Explore all work"
+  />
+
+  <PeopleIntro title={about.data.title} body={about.data.description} people={people} />
+
+  <CallToAction
+    title={contact.data.title}
+    body={contact.data.description}
+    buttonLabel="Start an Inquiry"
+    buttonHref="/contact"
+  />
+</SiteLayout>
+
+<style>
+  .home-copy {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    font-size: 1.03rem;
+  }
+</style>

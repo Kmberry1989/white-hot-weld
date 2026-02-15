@@ -1,0 +1,27 @@
+---
+import PageContainer from "../layout/PageContainer.astro";
+import styles from "./Section.module.css";
+
+interface Props {
+  id?: string;
+  kicker?: string;
+  title: string;
+  lede?: string;
+  tone?: "default" | "muted";
+}
+
+const { id, kicker, title, lede, tone = "default" } = Astro.props;
+---
+
+<section id={id} class:list={[styles.section, tone === "muted" && styles.muted]}>
+  <PageContainer className="fade-up">
+    <header class={styles.header}>
+      {kicker && <p class={styles.kicker}>{kicker}</p>}
+      <h2>{title}</h2>
+      {lede && <p class={styles.lede}>{lede}</p>}
+    </header>
+    <div class={styles.content}>
+      <slot />
+    </div>
+  </PageContainer>
+</section>

@@ -1,0 +1,258 @@
+---
+import SiteLayout from "../components/layout/SiteLayout.astro";
+import Section from "../components/ui/Section.astro";
+import { getPageContent } from "../lib/content";
+
+const page = await getPageContent("contact");
+const { Content } = await page.render();
+---
+
+<SiteLayout
+  title={page.data.title}
+  description={page.data.description}
+  seoTitle={page.data.seoTitle}
+  seoDescription={page.data.seoDescription}
+>
+  <Section id="contact" kicker={page.data.eyebrow} title={page.data.title} lede={page.data.description}>
+    <div class="prose">
+      <Content />
+    </div>
+
+    <p id="contact-success" class="notice success" hidden>
+      Thanks. Your inquiry was submitted and we will follow up with next steps.
+    </p>
+    <p id="contact-error" class="notice error" hidden>
+      Something interrupted submission. Please try again in a moment.
+    </p>
+
+    <form
+      name="commission"
+      method="POST"
+      action="/contact?submitted=true"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      class="surface form"
+      data-commission-form
+    >
+      <input type="hidden" name="form-name" value="commission" />
+      <p class="sr-only">
+        <label>
+          Do not fill this out if you are human:
+          <input name="bot-field" />
+        </label>
+      </p>
+
+      <div class="fields">
+        <label>
+          Name
+          <input type="text" name="name" required />
+        </label>
+
+        <label>
+          Email
+          <input type="email" name="email" required />
+        </label>
+
+        <label>
+          Phone (optional)
+          <input type="tel" name="phone" />
+        </label>
+
+        <label>
+          Size range
+          <select name="size" required>
+            <option value="">Select one</option>
+            <option>Small (under 24 in)</option>
+            <option>Medium (24-48 in)</option>
+            <option>Large (48 in and above)</option>
+          </select>
+        </label>
+
+        <label>
+          Material preference
+          <select name="material" required>
+            <option value="">Select one</option>
+            <option>Mild steel</option>
+            <option>Stainless steel</option>
+            <option>Reclaimed steel</option>
+            <option>Not sure yet</option>
+          </select>
+        </label>
+
+        <label>
+          Placement
+          <select name="placement" required>
+            <option value="">Select one</option>
+            <option>Indoor</option>
+            <option>Outdoor</option>
+            <option>Both</option>
+          </select>
+        </label>
+
+        <label>
+          Budget range
+          <select name="budget" required>
+            <option value="">Select one</option>
+            <option>Under $2,000</option>
+            <option>$2,000-$5,000</option>
+            <option>$5,000-$10,000</option>
+            <option>$10,000+</option>
+          </select>
+        </label>
+
+        <label>
+          Preferred timeline
+          <select name="timeline" required>
+            <option value="">Select one</option>
+            <option>Within 1 month</option>
+            <option>1-3 months</option>
+            <option>3-6 months</option>
+            <option>Flexible</option>
+          </select>
+        </label>
+
+        <label class="full">
+          Project notes
+          <textarea name="message" rows="6" required></textarea>
+        </label>
+      </div>
+
+      <button type="submit">Send inquiry</button>
+    </form>
+  </Section>
+</SiteLayout>
+
+<script is:inline>
+  const params = new URLSearchParams(window.location.search);
+  const submitted = params.get("submitted") === "true";
+  const errored = params.get("error") === "true";
+
+  const form = document.querySelector("[data-commission-form]");
+  const successNotice = document.getElementById("contact-success");
+  const errorNotice = document.getElementById("contact-error");
+
+  if (submitted && form && successNotice) {
+    successNotice.hidden = false;
+    form.hidden = true;
+  }
+
+  if (errored && errorNotice) {
+    errorNotice.hidden = false;
+  }
+
+  if (form instanceof HTMLFormElement) {
+    form.addEventListener("submit", async (event) => {
+      if (!window.fetch) {
+        return;
+      }
+
+      event.preventDefault();
+      const formData = new FormData(form);
+      const encoded = new URLSearchParams();
+
+      for (const [key, value] of formData.entries()) {
+        encoded.append(key, String(value));
+      }
+
+      try {
+        const response = await fetch("/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: encoded.toString()
+        });
+
+        if (response.ok) {
+          window.location.assign("/contact?submitted=true");
+          return;
+        }
+      } catch {
+        // Navigation below handles the user-visible error state.
+      }
+
+      window.location.assign("/contact?error=true");
+    });
+  }
+</script>
+
+<style>
+  .prose {
+    max-width: 64ch;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-4);
+  }
+
+  .notice {
+    margin-bottom: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+  }
+
+  .success {
+    background: rgba(79, 143, 180, 0.15);
+  }
+
+  .error {
+    background: rgba(224, 101, 47, 0.15);
+  }
+
+  .form {
+    padding: var(--space-5);
+  }
+
+  .fields {
+    display: grid;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+
+  label {
+    display: grid;
+    gap: var(--space-2);
+    font-size: 0.92rem;
+    color: var(--color-text-muted);
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+    color: var(--color-text);
+    padding: 0.65rem 0.75rem;
+    font: inherit;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  button {
+    border: 0;
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1.1rem;
+    font: inherit;
+    font-weight: 600;
+    background: var(--color-accent);
+    color: #131519;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: var(--color-accent-soft);
+  }
+
+  @media (min-width: 52rem) {
+    .fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

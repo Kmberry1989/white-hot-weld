@@ -1,0 +1,163 @@
+---
+import { Image } from "astro:assets";
+import SiteLayout from "../../components/layout/SiteLayout.astro";
+import PageContainer from "../../components/layout/PageContainer.astro";
+import { getAllWork } from "../../lib/content";
+import type { WorkItem } from "../../types/content";
+
+export async function getStaticPaths() {
+  const work = await getAllWork();
+
+  return work.map((item) => ({
+    params: { slug: item.slug },
+    props: { work: item }
+  }));
+}
+
+const { work } = Astro.props as { work: WorkItem };
+const { Content } = await work.entry.render();
+---
+
+<SiteLayout title={work.title} description={work.excerpt}>
+  <PageContainer size="wide" className="work-page">
+    <a class="back-link" href="/gallery">← Back to gallery</a>
+
+    <div class="hero-media surface">
+      <Image
+        src={work.coverImage}
+        alt={`${work.title} main view`}
+        loading="eager"
+        fetchpriority="high"
+        width={1600}
+        height={1000}
+        class="cover"
+      />
+    </div>
+
+    <header class="header">
+      <h1>{work.title}</h1>
+      <p class="excerpt">{work.excerpt}</p>
+      <dl class="meta">
+        <div>
+          <dt>Year</dt>
+          <dd>{work.year}</dd>
+        </div>
+        <div>
+          <dt>Materials</dt>
+          <dd>{work.materials}</dd>
+        </div>
+        <div>
+          <dt>Dimensions</dt>
+          <dd>{work.dimensions}</dd>
+        </div>
+        {work.status && (
+          <div>
+            <dt>Status</dt>
+            <dd>{work.status}</dd>
+          </div>
+        )}
+      </dl>
+    </header>
+
+    <div class="copy">
+      <Content />
+    </div>
+
+    {
+      work.galleryImages.length > 0 && (
+        <section class="gallery">
+          <h2>Details</h2>
+          <div class="gallery-grid">
+            {work.galleryImages.map((image) => <Image src={image} alt={`${work.title} detail`} loading="lazy" />)}
+          </div>
+        </section>
+      )
+    }
+  </PageContainer>
+</SiteLayout>
+
+<style>
+  .work-page {
+    padding-top: var(--space-7);
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .back-link {
+    justify-self: start;
+    color: var(--color-accent-soft);
+    font-weight: 600;
+  }
+
+  .hero-media {
+    overflow: clip;
+  }
+
+  .cover {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  .header {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 72ch;
+  }
+
+  .header h1 {
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+  }
+
+  .excerpt {
+    color: var(--color-text-muted);
+    max-width: 56ch;
+  }
+
+  .meta {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    margin: 0;
+  }
+
+  .meta dt {
+    color: var(--color-contrast);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.77rem;
+    margin-bottom: var(--space-1);
+  }
+
+  .meta dd {
+    margin: 0;
+  }
+
+  .copy {
+    max-width: 68ch;
+    color: var(--color-text-muted);
+  }
+
+  .gallery {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .gallery h2 {
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+  }
+
+  .gallery-grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+
+  .gallery-grid :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+  }
+</style>

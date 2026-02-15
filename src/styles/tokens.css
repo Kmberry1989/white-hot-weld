@@ -1,0 +1,32 @@
+:root {
+  --font-heading: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+
+  --color-bg: #14181b;
+  --color-bg-elevated: #1b2024;
+  --color-bg-soft: #222931;
+  --color-text: #f5f0e8;
+  --color-text-muted: #c5bfb4;
+  --color-border: #3d454f;
+  --color-accent: #e0652f;
+  --color-accent-soft: #ff8a52;
+  --color-contrast: #4f8fb4;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  --radius-sm: 0.35rem;
+  --radius-md: 0.65rem;
+  --radius-lg: 1rem;
+
+  --shadow-soft: 0 12px 28px rgba(0, 0, 0, 0.25);
+  --max-width-narrow: 52rem;
+  --max-width-base: 72rem;
+  --max-width-wide: 88rem;
+}

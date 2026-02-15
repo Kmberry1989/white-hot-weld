@@ -1,0 +1,12 @@
+.button {
+  display: inline-block;
+  padding: 0.8rem 1.2rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: #111316;
+  font-weight: 600;
+}
+
+.button:hover {
+  background: var(--color-accent-soft);
+}

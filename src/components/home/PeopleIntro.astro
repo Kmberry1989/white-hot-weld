@@ -1,0 +1,27 @@
+---
+import type { Person } from "../../types/ui";
+import Section from "../ui/Section.astro";
+import styles from "./PeopleIntro.module.css";
+
+interface Props {
+  title: string;
+  body: string;
+  people: Person[];
+}
+
+const { title, body, people } = Astro.props;
+---
+
+<Section id="people" kicker="The People" title={title} lede={body} tone="muted">
+  <div class={styles.grid}>
+    {
+      people.map((person) => (
+        <article class={styles.card}>
+          <h3>{person.name}</h3>
+          <p class={styles.role}>{person.role}</p>
+          <p>{person.bio}</p>
+        </article>
+      ))
+    }
+  </div>
+</Section>

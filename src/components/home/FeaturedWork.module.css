@@ -1,0 +1,30 @@
+.grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.cta {
+  justify-self: start;
+  margin-top: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-accent-soft);
+  font-weight: 600;
+}
+
+.cta:hover {
+  color: var(--color-accent);
+}
+
+@media (min-width: 52rem) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 78rem) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

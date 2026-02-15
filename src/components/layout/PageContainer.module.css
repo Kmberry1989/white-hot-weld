@@ -1,0 +1,16 @@
+.container {
+  width: min(100% - 2rem, var(--max-width-base));
+  margin-inline: auto;
+}
+
+.narrow {
+  width: min(100% - 2rem, var(--max-width-narrow));
+}
+
+.base {
+  width: min(100% - 2rem, var(--max-width-base));
+}
+
+.wide {
+  width: min(100% - 2rem, var(--max-width-wide));
+}

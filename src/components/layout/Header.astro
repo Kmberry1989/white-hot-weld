@@ -1,0 +1,51 @@
+---
+import type { NavItem } from "../../types/ui";
+import PageContainer from "./PageContainer.astro";
+import styles from "./Header.module.css";
+
+interface Props {
+  navItems: NavItem[];
+  currentPath: string;
+}
+
+const { navItems, currentPath } = Astro.props;
+
+const isActive = (href: string): boolean => {
+  if (href === "/") {
+    return currentPath === "/";
+  }
+
+  if (href === "/gallery" && currentPath.startsWith("/work/")) {
+    return true;
+  }
+
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+};
+---
+
+<div class={styles.wrap}>
+  <PageContainer size="wide" className={styles.container}>
+    <a href="/" class={styles.brand}>
+      <span class={styles.brandTop}>White Hot Weld</span>
+      <span class={styles.brandBottom}>Married Metal Art</span>
+    </a>
+
+    <nav aria-label="Primary">
+      <ul class={styles.navList}>
+        {
+          navItems.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={[styles.link, isActive(item.href) && styles.active]}
+                aria-current={isActive(item.href) ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </PageContainer>
+</div>

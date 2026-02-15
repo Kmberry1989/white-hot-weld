@@ -1,0 +1,17 @@
+---
+import type { ContainerSize } from "../../types/ui";
+import styles from "./PageContainer.module.css";
+
+interface Props {
+  size?: ContainerSize;
+  as?: "div" | "section" | "main";
+  className?: string;
+}
+
+const { size = "base", as = "div", className = "" } = Astro.props as Props;
+const Tag = as;
+---
+
+<Tag class:list={[styles.container, styles[size], className]}>
+  <slot />
+</Tag>

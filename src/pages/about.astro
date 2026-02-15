@@ -1,0 +1,49 @@
+---
+import SiteLayout from "../components/layout/SiteLayout.astro";
+import Section from "../components/ui/Section.astro";
+import { getPageContent } from "../lib/content";
+
+const about = await getPageContent("about");
+const { Content } = await about.render();
+---
+
+<SiteLayout
+  title={about.data.title}
+  description={about.data.description}
+  seoTitle={about.data.seoTitle}
+  seoDescription={about.data.seoDescription}
+>
+  <Section
+    id="about"
+    kicker={about.data.eyebrow}
+    title={about.data.title}
+    lede={about.data.description}
+    tone="muted"
+  >
+    <div class="prose">
+      <Content />
+    </div>
+  </Section>
+</SiteLayout>
+
+<style>
+  .prose {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 70ch;
+    color: var(--color-text-muted);
+  }
+
+  .prose :global(h2) {
+    margin-top: var(--space-4);
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    color: var(--color-text);
+  }
+
+  .prose :global(ul) {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+import type { WorkSummary } from "../../types/ui";
+import Section from "../ui/Section.astro";
+import WorkCard from "../ui/WorkCard.astro";
+import styles from "./FeaturedWork.module.css";
+
+interface Props {
+  title: string;
+  intro: string;
+  items: WorkSummary[];
+  ctaHref: string;
+  ctaLabel: string;
+}
+
+const { title, intro, items, ctaHref, ctaLabel } = Astro.props;
+---
+
+<Section id="featured-work" kicker="The Proof" title={title} lede={intro}>
+  <div class={styles.grid}>
+    {
+      items.map((item, index) => (
+        <WorkCard item={item} priority={index === 0} />
+      ))
+    }
+  </div>
+  <a class={styles.cta} href={ctaHref}>{ctaLabel}</a>
+</Section>

@@ -1,0 +1,42 @@
+---
+import type { NavItem, SocialLink } from "../../types/ui";
+import PageContainer from "./PageContainer.astro";
+import styles from "./Footer.module.css";
+
+interface Props {
+  tagline: string;
+  navItems: NavItem[];
+  socialLinks: SocialLink[];
+}
+
+const { tagline, navItems, socialLinks } = Astro.props;
+---
+
+<footer class={styles.footer}>
+  <PageContainer size="wide" className={styles.container}>
+    <div class={styles.brandBlock}>
+      <p class={styles.brand}>White Hot Weld</p>
+      <p class={styles.tagline}>{tagline}</p>
+    </div>
+
+    <ul class={styles.nav}>
+      {
+        navItems.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <ul class={styles.social}>
+      {
+        socialLinks.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </PageContainer>
+</footer>

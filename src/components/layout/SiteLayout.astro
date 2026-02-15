@@ -1,0 +1,53 @@
+---
+import type { NavItem, SocialLink } from "../../types/ui";
+import "../../styles/global.css";
+import Footer from "./Footer.astro";
+import Header from "./Header.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+const { title, description, seoTitle, seoDescription } = Astro.props;
+
+const navItems: NavItem[] = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/contact", label: "Contact" }
+];
+
+const socialLinks: SocialLink[] = [
+  { href: "#", label: "Instagram" },
+  { href: "#", label: "Email" }
+];
+
+const pageTitle = seoTitle ?? (title ? `${title} | White Hot Weld` : "White Hot Weld");
+const pageDescription =
+  seoDescription ?? description ?? "Married metal art shaped with warmth, intention, and precision.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={pageDescription} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <Header navItems={navItems} currentPath={Astro.url.pathname} />
+    <main>
+      <slot />
+    </main>
+    <Footer
+      tagline="Married Metal Art. Began with a spark. Built to endure."
+      navItems={navItems}
+      socialLinks={socialLinks}
+    />
+  </body>
+</html>

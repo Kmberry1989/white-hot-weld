@@ -1,0 +1,55 @@
+---
+import SiteLayout from "../../components/layout/SiteLayout.astro";
+import Section from "../../components/ui/Section.astro";
+import WorkCard from "../../components/ui/WorkCard.astro";
+import { getAllWork, getPageContent } from "../../lib/content";
+
+const page = await getPageContent("gallery");
+const work = await getAllWork();
+const { Content } = await page.render();
+---
+
+<SiteLayout
+  title={page.data.title}
+  description={page.data.description}
+  seoTitle={page.data.seoTitle}
+  seoDescription={page.data.seoDescription}
+>
+  <Section id="gallery" kicker={page.data.eyebrow} title={page.data.title} lede={page.data.description}>
+    <div class="prose">
+      <Content />
+    </div>
+    <div class="grid">
+      {
+        work.map((item, index) => (
+          <WorkCard item={item} priority={index === 0} />
+        ))
+      }
+    </div>
+  </Section>
+</SiteLayout>
+
+<style>
+  .prose {
+    max-width: 64ch;
+    color: var(--color-text-muted);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  @media (min-width: 52rem) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 78rem) {
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>
