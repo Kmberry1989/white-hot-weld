@@ -1,14 +1,14 @@
 # White Hot Weld
 
-Phase 1 production-ready Astro site for White Hot Weld.
+Production-ready Astro site for White Hot Weld, built static-first for Netlify/Vercel.
 
 ## Stack
 
 - Astro (TypeScript strict mode)
-- Static-first build output
-- CSS Modules + global tokens
+- CSS Modules + global design tokens
 - Markdown content collections
-- Netlify-first form handling (Vercel-compatible static output)
+- Manifest-driven curated image library
+- OGL shader background + Motion One interactions + Lenis smooth scroll
 
 ## Local development
 
@@ -24,11 +24,27 @@ npm run check
 npm run build
 ```
 
+## Media curation workflow
+
+```bash
+npm run media:audit
+npm run media:sort
+```
+
+- Source ingest folder: `public/images/unsorted`
+- Curated output folders:
+  - `public/images/library/primary`
+  - `public/images/library/editorial`
+  - `public/images/library/thumb`
+  - `public/images/library/archive/duplicates`
+  - `public/images/library/archive/lowres`
+- Generated manifest: `src/content/media/manifest.json`
+
 ## Content authoring
 
-- Page copy lives in `src/content/pages/*.md`
-- Work entries live in `src/content/work/*.md`
-- Work image assets live in `src/assets/work/*`
+- Page copy: `src/content/pages/*.md`
+- Work entries: `src/content/work/*.md`
+- Work image assets: `src/assets/work/*`
 
 Required `work` frontmatter fields:
 
@@ -57,15 +73,15 @@ Required `work` frontmatter fields:
 
 - Build command: `npm run build`
 - Publish directory: `dist`
-- `netlify.toml` is included.
+- Config file: `netlify.toml`
 - Contact form uses native Netlify Forms (`name="commission"`, `data-netlify="true"`).
 
 ### Vercel
 
-- Static output is generated in `dist` via Astro.
-- Standard Astro static deploy works without serverless requirements in this phase.
+- Astro static output from `dist`.
+- No serverless dependency required in this phase.
 
 ## Notes
 
-- Placeholder assets are intentionally lightweight and should be replaced with production photography.
-- Motion remains restrained and respects reduced-motion preferences.
+- Visual effects progressively enhance and gracefully fall back to static styling.
+- Reduced-motion and coarse-pointer devices disable heavy motion/shader runtime.

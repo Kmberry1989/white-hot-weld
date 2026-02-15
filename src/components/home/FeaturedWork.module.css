@@ -1,3 +1,24 @@
+.leadGrid {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.leadCard {
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: clip;
+  min-height: 12rem;
+}
+
+.leadCard img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .grid {
   display: grid;
   gap: var(--space-4);
@@ -17,6 +38,12 @@
   color: var(--color-accent);
 }
 
+@media (min-width: 44rem) {
+  .leadGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (min-width: 52rem) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -24,6 +51,10 @@
 }
 
 @media (min-width: 78rem) {
+  .leadGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

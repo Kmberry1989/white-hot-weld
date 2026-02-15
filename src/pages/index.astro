@@ -43,6 +43,7 @@ function parsePeople(markdown: string): Person[] {
 
 const people = parsePeople(about.body);
 const hero = home.data.hero;
+const heroMedia = hero.mediaSrc && hero.mediaAlt ? { src: hero.mediaSrc, alt: hero.mediaAlt } : undefined;
 ---
 
 <SiteLayout
@@ -50,6 +51,7 @@ const hero = home.data.hero;
   description={home.data.description}
   seoTitle={home.data.seoTitle}
   seoDescription={home.data.seoDescription}
+  effectPreset="home"
 >
   <Hero
     eyebrow={home.data.eyebrow}
@@ -61,11 +63,11 @@ const hero = home.data.hero;
         ? { href: hero.secondaryCtaHref, label: hero.secondaryCtaLabel }
         : undefined
     }
-    media={hero.mediaSrc && hero.mediaAlt ? { src: hero.mediaSrc, alt: hero.mediaAlt } : undefined}
+    media={heroMedia}
   />
 
   <Section id="what-this-is" kicker="What This Is" title={home.data.title} lede={home.data.description}>
-    <p class="home-copy">{home.body}</p>
+    <p class="home-copy" data-reveal>{home.body}</p>
   </Section>
 
   <FeaturedWork
@@ -73,7 +75,7 @@ const hero = home.data.hero;
     intro={gallery.data.description}
     items={featuredWork}
     ctaHref="/gallery"
-    ctaLabel="Explore all work"
+    ctaLabel="View item details"
   />
 
   <PeopleIntro title={about.data.title} body={about.data.description} people={people} />

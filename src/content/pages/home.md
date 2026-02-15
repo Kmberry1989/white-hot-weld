@@ -5,7 +5,7 @@ eyebrow: Married Metal Art
 hero:
   title: Began with a Spark.
   subtitle: Industrial materials, shaped slowly and deliberately, by two artists building one body of work together.
-  primaryCtaLabel: View the Gallery
+  primaryCtaLabel: View the Shop
   primaryCtaHref: /gallery
   secondaryCtaLabel: Commission a Piece
   secondaryCtaHref: /contact

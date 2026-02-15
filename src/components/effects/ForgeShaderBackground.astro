@@ -1,0 +1,21 @@
+---
+import type { EffectPreset } from "../../types/effects";
+
+interface Props {
+  preset?: EffectPreset;
+  disable?: boolean;
+}
+
+const { preset = "inner", disable = false } = Astro.props as Props;
+---
+
+<div
+  class="forge-shader-layer"
+  aria-hidden="true"
+  data-forge-shader
+  data-effect-preset={preset}
+  data-disabled={disable ? "true" : "false"}
+>
+  <canvas class="forge-shader-canvas" data-forge-canvas></canvas>
+  <canvas class="arc-flash-canvas" data-arc-canvas></canvas>
+</div>

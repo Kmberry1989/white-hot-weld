@@ -1,4 +1,7 @@
 ---
+import { ClientRouter } from "astro:transitions";
+import ForgeShaderBackground from "../effects/ForgeShaderBackground.astro";
+import type { EffectPreset } from "../../types/effects";
 import type { NavItem, SocialLink } from "../../types/ui";
 import "../../styles/global.css";
 import Footer from "./Footer.astro";
@@ -9,14 +12,23 @@ interface Props {
   description?: string;
   seoTitle?: string;
   seoDescription?: string;
+  effectPreset?: EffectPreset;
+  disableEffects?: boolean;
 }
 
-const { title, description, seoTitle, seoDescription } = Astro.props;
+const {
+  title,
+  description,
+  seoTitle,
+  seoDescription,
+  effectPreset = "inner",
+  disableEffects = false
+} = Astro.props as Props;
 
 const navItems: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/gallery", label: "Gallery" },
+  { href: "/gallery", label: "Shop" },
   { href: "/contact", label: "Contact" }
 ];
 
@@ -37,17 +49,52 @@ const pageDescription =
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={pageDescription} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <ClientRouter />
     <title>{pageTitle}</title>
   </head>
-  <body>
-    <Header navItems={navItems} currentPath={Astro.url.pathname} />
-    <main>
-      <slot />
-    </main>
-    <Footer
-      tagline="Married Metal Art. Began with a spark. Built to endure."
-      navItems={navItems}
-      socialLinks={socialLinks}
-    />
+  <body data-effect-preset={effectPreset} data-effects-disabled={disableEffects ? "true" : "false"}>
+    <ForgeShaderBackground preset={effectPreset} disable={disableEffects} />
+
+    <div class="site-shell">
+      <Header navItems={navItems} currentPath={Astro.url.pathname} />
+      <main>
+        <slot />
+      </main>
+      <Footer
+        tagline="Married Metal Art. Began with a spark. Built to endure."
+        navItems={navItems}
+        socialLinks={socialLinks}
+      />
+    </div>
+
+    <script>
+      import { initForgeShader } from "../../scripts/effects/forgeShader";
+      import { initHoverFx } from "../../scripts/effects/hoverFx";
+      import { initPageMotion } from "../../scripts/effects/pageMotion";
+      import { initArcFlash } from "../../scripts/effects/arcFlash";
+
+      const bootstrapEffects = () => {
+        const layer = document.querySelector("[data-forge-shader]");
+        const body = document.body;
+
+        if (layer instanceof HTMLElement && body) {
+          const preset = (body.dataset.effectPreset ?? "inner");
+          const disabled = body.dataset.effectsDisabled === "true";
+          initForgeShader(layer, preset, disabled);
+          initArcFlash(layer, preset, disabled);
+        }
+
+        initHoverFx();
+        initPageMotion();
+      };
+
+      const win = window as Window & { __whwEffectsBound?: boolean };
+      if (!win.__whwEffectsBound) {
+        document.addEventListener("astro:page-load", bootstrapEffects);
+        win.__whwEffectsBound = true;
+      }
+
+      bootstrapEffects();
+    </script>
   </body>
 </html>

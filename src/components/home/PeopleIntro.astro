@@ -16,7 +16,7 @@ const { title, body, people } = Astro.props;
   <div class={styles.grid}>
     {
       people.map((person) => (
-        <article class={styles.card}>
+        <article class={styles.card} data-reveal>
           <h3>{person.name}</h3>
           <p class={styles.role}>{person.role}</p>
           <p>{person.bio}</p>

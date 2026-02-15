@@ -13,5 +13,5 @@ const { title, body, buttonLabel, buttonHref } = Astro.props;
 ---
 
 <Section id="invitation" kicker="The Invitation" title={title} lede={body}>
-  <a class={styles.button} href={buttonHref}>{buttonLabel}</a>
+  <a class={styles.button} href={buttonHref} data-magnetic data-reveal>{buttonLabel}</a>
 </Section>

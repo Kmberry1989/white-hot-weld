@@ -14,11 +14,23 @@ export interface WorkItem {
   excerpt: string;
   year: number;
   materials: string;
+  medium?: string;
   dimensions: string;
+  widthInches?: number;
+  heightInches?: number;
+  depthInches?: number;
+  price?: string;
   featured: boolean;
   status?: WorkStatus;
   coverImage: ImageMetadata;
   galleryImages: ImageMetadata[];
+  maker?: string;
+  aboutItem?: string;
+  showFullDescriptionLabel?: string;
+  shippingPolicyTitle?: string;
+  shippingEstimate?: string;
+  shippingCost?: string;
+  shipsFrom?: string;
 }
 
 export interface ParsedPerson {

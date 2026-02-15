@@ -2,9 +2,12 @@
 import SiteLayout from "../components/layout/SiteLayout.astro";
 import Section from "../components/ui/Section.astro";
 import { getPageContent } from "../lib/content";
+import { getMediaByCategory, getMediaByUse } from "../lib/media";
 
 const about = await getPageContent("about");
 const { Content } = await about.render();
+
+const peopleLead = (await getMediaByUse("about-people-feature"))[0] ?? (await getMediaByCategory("people"))[0];
 ---
 
 <SiteLayout
@@ -12,6 +15,7 @@ const { Content } = await about.render();
   description={about.data.description}
   seoTitle={about.data.seoTitle}
   seoDescription={about.data.seoDescription}
+  effectPreset="inner"
 >
   <Section
     id="about"
@@ -20,13 +24,39 @@ const { Content } = await about.render();
     lede={about.data.description}
     tone="muted"
   >
-    <div class="prose">
+    {
+      peopleLead && (
+        <figure class="people-figure surface" data-reveal>
+          <img
+            src={peopleLead.destPath}
+            alt="Sheryl and John in the workshop"
+            width={peopleLead.width}
+            height={peopleLead.height}
+            loading="eager"
+          />
+        </figure>
+      )
+    }
+
+    <div class="prose" data-reveal>
       <Content />
     </div>
   </Section>
 </SiteLayout>
 
 <style>
+  .people-figure {
+    margin: 0;
+    max-width: 36rem;
+    overflow: clip;
+  }
+
+  .people-figure img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
   .prose {
     display: grid;
     gap: var(--space-4);

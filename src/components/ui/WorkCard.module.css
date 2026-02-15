@@ -1,13 +1,17 @@
 .card {
+  position: relative;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   overflow: clip;
   background: rgba(255, 255, 255, 0.02);
-  transition: border-color 200ms ease;
+  transition:
+    border-color 200ms ease,
+    box-shadow 260ms ease;
 }
 
 .card:hover {
-  border-color: rgba(224, 101, 47, 0.5);
+  border-color: rgba(224, 101, 47, 0.55);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.32);
 }
 
 .link {
@@ -19,6 +23,11 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
+  transition: transform 320ms ease;
+}
+
+.card:hover .image {
+  transform: scale(1.04);
 }
 
 .body {
@@ -29,6 +38,12 @@
 
 .body h3 {
   font-size: clamp(1.35rem, 4vw, 1.75rem);
+}
+
+.price {
+  color: var(--color-accent-soft);
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .meta {

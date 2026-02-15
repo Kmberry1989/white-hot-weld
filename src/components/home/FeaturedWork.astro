@@ -1,5 +1,5 @@
 ---
-import type { WorkSummary } from "../../types/ui";
+import type { CuratedImage, WorkSummary } from "../../types/ui";
 import Section from "../ui/Section.astro";
 import WorkCard from "../ui/WorkCard.astro";
 import styles from "./FeaturedWork.module.css";
@@ -10,12 +10,31 @@ interface Props {
   items: WorkSummary[];
   ctaHref: string;
   ctaLabel: string;
+  leadImages?: CuratedImage[];
 }
 
-const { title, intro, items, ctaHref, ctaLabel } = Astro.props;
+const { title, intro, items, ctaHref, ctaLabel, leadImages = [] } = Astro.props;
 ---
 
 <Section id="featured-work" kicker="The Proof" title={title} lede={intro}>
+  {
+    leadImages.length > 0 && (
+      <div class={styles.leadGrid}>
+        {leadImages.map((image, index) => (
+          <figure class={styles.leadCard} data-hover-card data-reveal>
+            <img
+              src={image.src}
+              alt={image.alt}
+              width={image.width}
+              height={image.height}
+              loading={index === 0 ? "eager" : "lazy"}
+            />
+          </figure>
+        ))}
+      </div>
+    )
+  }
+
   <div class={styles.grid}>
     {
       items.map((item, index) => (
@@ -23,5 +42,7 @@ const { title, intro, items, ctaHref, ctaLabel } = Astro.props;
       ))
     }
   </div>
-  <a class={styles.cta} href={ctaHref}>{ctaLabel}</a>
+  <a class={styles.cta} href={ctaHref} data-magnetic>
+    {ctaLabel}
+  </a>
 </Section>

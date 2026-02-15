@@ -14,11 +14,13 @@ const { Content } = await page.render();
   description={page.data.description}
   seoTitle={page.data.seoTitle}
   seoDescription={page.data.seoDescription}
+  effectPreset="gallery"
 >
   <Section id="gallery" kicker={page.data.eyebrow} title={page.data.title} lede={page.data.description}>
-    <div class="prose">
+    <div class="prose" data-reveal>
       <Content />
     </div>
+
     <div class="grid">
       {
         work.map((item, index) => (
@@ -38,18 +40,12 @@ const { Content } = await page.render();
   .grid {
     display: grid;
     gap: var(--space-4);
-    margin-top: var(--space-4);
+    margin-top: var(--space-5);
   }
 
   @media (min-width: 52rem) {
     .grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 78rem) {
-    .grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 34rem);
     }
   }
 </style>

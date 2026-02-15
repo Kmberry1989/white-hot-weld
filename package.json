@@ -7,15 +7,21 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "media:audit": "node scripts/sort-unsorted-images.mjs",
+    "media:sort": "node scripts/sort-unsorted-images.mjs --write"
   },
   "dependencies": {
     "@fontsource/barlow-condensed": "^5.2.8",
     "@fontsource/ibm-plex-sans": "^5.2.8",
-    "astro": "^5.17.1"
+    "@studio-freight/lenis": "^1.0.42",
+    "astro": "^5.17.1",
+    "motion": "^11.18.2",
+    "ogl": "^1.0.11"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@types/node": "^22.13.9"
   }
 }

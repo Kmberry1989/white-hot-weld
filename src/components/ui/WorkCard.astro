@@ -12,7 +12,7 @@ const { item, priority = false } = Astro.props;
 const alt = `${item.title} welded metal artwork`;
 ---
 
-<article class={styles.card}>
+<article class={styles.card} data-hover-card data-reveal>
   <a class={styles.link} href={`/work/${item.slug}`}>
     <Image
       src={item.coverImage}
@@ -26,7 +26,8 @@ const alt = `${item.title} welded metal artwork`;
     />
     <div class={styles.body}>
       <h3>{item.title}</h3>
-      <p class={styles.meta}>{item.year} · {item.materials}</p>
+      {item.price && <p class={styles.price}>{item.price}</p>}
+      <p class={styles.meta}>{item.medium ?? item.materials}</p>
       <p class={styles.excerpt}>{item.excerpt}</p>
     </div>
   </a>

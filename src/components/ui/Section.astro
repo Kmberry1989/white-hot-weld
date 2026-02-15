@@ -14,8 +14,8 @@ const { id, kicker, title, lede, tone = "default" } = Astro.props;
 ---
 
 <section id={id} class:list={[styles.section, tone === "muted" && styles.muted]}>
-  <PageContainer className="fade-up">
-    <header class={styles.header}>
+  <PageContainer>
+    <header class={styles.header} data-reveal>
       {kicker && <p class={styles.kicker}>{kicker}</p>}
       <h2>{title}</h2>
       {lede && <p class={styles.lede}>{lede}</p>}

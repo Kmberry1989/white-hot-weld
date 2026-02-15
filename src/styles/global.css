@@ -5,6 +5,7 @@
 @import "@fontsource/ibm-plex-sans/600.css";
 @import "./tokens.css";
 @import "./utilities.css";
+@import "./effects.css";
 
 * {
   box-sizing: border-box;
@@ -21,7 +22,7 @@ body {
   color: var(--color-text);
   background-color: var(--color-bg);
   background-image:
-    radial-gradient(circle at 20% -20%, rgba(224, 101, 47, 0.16), transparent 38%),
+    radial-gradient(circle at 18% -20%, rgba(224, 101, 47, 0.16), transparent 36%),
     linear-gradient(180deg, #161a1e 0%, #121518 100%);
   line-height: 1.6;
 }

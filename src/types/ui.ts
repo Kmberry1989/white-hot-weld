@@ -22,6 +22,13 @@ export interface HeroMedia {
   alt: string;
 }
 
+export interface CuratedImage {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
 export interface Person {
   name: string;
   role: string;
@@ -34,6 +41,8 @@ export interface WorkSummary {
   excerpt: string;
   year: number;
   materials: string;
+  medium?: string;
   dimensions: string;
+  price?: string;
   coverImage: ImageMetadata;
 }

@@ -35,11 +35,23 @@ async function toWorkItem(entry: WorkEntry): Promise<WorkItem> {
     excerpt: entry.data.excerpt,
     year: entry.data.year,
     materials: entry.data.materials,
+    medium: entry.data.medium,
     dimensions: entry.data.dimensions,
+    widthInches: entry.data.widthInches,
+    heightInches: entry.data.heightInches,
+    depthInches: entry.data.depthInches,
+    price: entry.data.price,
     featured: entry.data.featured,
     status: entry.data.status,
     coverImage: await resolveImage(entry.data.coverImage),
-    galleryImages: await Promise.all((entry.data.galleryImages ?? []).map(resolveImage))
+    galleryImages: await Promise.all((entry.data.galleryImages ?? []).map(resolveImage)),
+    maker: entry.data.maker,
+    aboutItem: entry.data.aboutItem,
+    showFullDescriptionLabel: entry.data.showFullDescriptionLabel,
+    shippingPolicyTitle: entry.data.shippingPolicyTitle,
+    shippingEstimate: entry.data.shippingEstimate,
+    shippingCost: entry.data.shippingCost,
+    shipsFrom: entry.data.shipsFrom
   };
 }
 

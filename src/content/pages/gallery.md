@@ -1,8 +1,8 @@
 ---
-title: Gallery
-description: A focused selection of welded works.
-eyebrow: The Proof
-seoTitle: Gallery | White Hot Weld
-seoDescription: Browse selected White Hot Weld pieces and open each work for materials, dimensions, and context.
+title: Shop
+description: A focused selection of welded works currently available for purchase.
+eyebrow: Shop
+seoTitle: Shop | White Hot Weld
+seoDescription: Browse the current White Hot Weld shop listing with dimensions, materials, and shipping details.
 ---
-This gallery stays intentionally compact. Each piece is given room, context, and scale.
+The shop currently features one available piece.

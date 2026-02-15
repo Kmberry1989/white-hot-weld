@@ -12,9 +12,10 @@ const { Content } = await page.render();
   description={page.data.description}
   seoTitle={page.data.seoTitle}
   seoDescription={page.data.seoDescription}
+  effectPreset="inner"
 >
   <Section id="contact" kicker={page.data.eyebrow} title={page.data.title} lede={page.data.description}>
-    <div class="prose">
+    <div class="prose" data-reveal>
       <Content />
     </div>
 
@@ -117,7 +118,7 @@ const { Content } = await page.render();
         </label>
       </div>
 
-      <button type="submit">Send inquiry</button>
+      <button type="submit" data-magnetic>Send inquiry</button>
     </form>
   </Section>
 </SiteLayout>

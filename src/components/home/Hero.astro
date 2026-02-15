@@ -17,14 +17,14 @@ const { eyebrow, title, subtitle, primaryCta, secondaryCta, media } = Astro.prop
 
 <section class={styles.hero}>
   <PageContainer size="wide" className={styles.container}>
-    <div class:list={[styles.copy, "fade-up"]}>
+    <div class={styles.copy} data-reveal>
       {eyebrow && <p class={styles.eyebrow}>{eyebrow}</p>}
       <h1>{title}</h1>
       <p class={styles.subtitle}>{subtitle}</p>
       <div class={styles.actions}>
-        <a class={styles.primary} href={primaryCta.href}>{primaryCta.label}</a>
+        <a class={styles.primary} href={primaryCta.href} data-magnetic>{primaryCta.label}</a>
         {secondaryCta && (
-          <a class={styles.secondary} href={secondaryCta.href}>
+          <a class={styles.secondary} href={secondaryCta.href} data-magnetic>
             {secondaryCta.label}
           </a>
         )}
@@ -32,7 +32,7 @@ const { eyebrow, title, subtitle, primaryCta, secondaryCta, media } = Astro.prop
     </div>
 
     {media && (
-      <div class:list={[styles.mediaWrap, "fade-up"]}>
+      <div class={styles.mediaWrap} data-reveal>
         <img src={media.src} alt={media.alt} loading="eager" fetchpriority="high" class={styles.media} />
       </div>
     )}
