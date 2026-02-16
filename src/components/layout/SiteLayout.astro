@@ -40,6 +40,7 @@ const socialLinks: SocialLink[] = [
 const pageTitle = seoTitle ?? (title ? `${title} | White Hot Weld` : "White Hot Weld");
 const pageDescription =
   seoDescription ?? description ?? "Married metal art shaped with warmth, intention, and precision.";
+const showMotorcycleRide = effectPreset === "home";
 ---
 
 <!doctype html>
@@ -67,23 +68,27 @@ const pageDescription =
       />
     </div>
 
-    <div class="motorcycle-runner" data-motorcycle-runner aria-hidden="true">
-      <canvas class="motorcycle-smoke-canvas" data-motorcycle-smoke></canvas>
-      <div class="motorcycle-track" data-motorcycle-track>
-        <model-viewer
-          class="motorcycle-model"
-          data-motorcycle-model
-          src="/models/motorcycle.glb"
-          interaction-prompt="none"
-          disable-zoom
-          disable-pan
-          shadow-intensity="1.05"
-          exposure="1.08"
-          camera-orbit="-86deg 78deg 98%"
-          field-of-view="29deg"
-        />
-      </div>
-    </div>
+    {
+      showMotorcycleRide && (
+        <div class="motorcycle-runner" data-motorcycle-runner aria-hidden="true">
+          <canvas class="motorcycle-smoke-canvas" data-motorcycle-smoke></canvas>
+          <div class="motorcycle-track" data-motorcycle-track>
+            <model-viewer
+              class="motorcycle-model"
+              data-motorcycle-model
+              src="/models/motorcycle.glb"
+              interaction-prompt="none"
+              disable-zoom
+              disable-pan
+              shadow-intensity="1.05"
+              exposure="1.08"
+              camera-orbit="-86deg 78deg 98%"
+              field-of-view="29deg"
+            />
+          </div>
+        </div>
+      )
+    }
 
     <script>
       import { initForgeShader } from "../../scripts/effects/forgeShader";
@@ -101,7 +106,7 @@ const pageDescription =
           const disabled = body.dataset.effectsDisabled === "true";
           initForgeShader(layer, preset, disabled);
           initArcFlash(layer, preset, disabled);
-          initMotorcycleRide(layer, preset, disabled);
+          initMotorcycleRide(layer, preset, disabled || preset !== "home");
         }
 
         initHoverFx();

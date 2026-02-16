@@ -113,11 +113,23 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
   let wheelieAmount = 0;
   let wheeliePeakReached = false;
 
-  const returnDurationSeconds = 8.5;
+  const triggerDelayMs = 2000;
+  const returnDurationSeconds = 2.5;
+  const showcaseStartDelayMs = 1700;
+  const showcaseSpinSpeedDegPerSecond = 11;
   let motionSign = -1;
+  let triggerArmed = false;
+  let triggerReady = false;
+  let triggerReleaseAt = 0;
+  let triggerRevealSnapshot = 0;
+  let parkedAtTime = 0;
 
   let animationReady = false;
   let animationDuration = 0;
+  let wheelAnimationTime = 0;
+  let lastTrackX = Number.NaN;
+  let lastFrameTime = 0;
+  let animationLoadToken = 0;
 
   let smokeAccumulator = 0;
   let smokeParticles: SmokeParticle[] = [];
@@ -137,20 +149,58 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
   };
 
   const onModelLoad = (): void => {
-    if (model.availableAnimations && model.availableAnimations.length > 0) {
-      model.animationName = model.availableAnimations[0];
-    }
-
-    animationDuration = Number(model.duration ?? 0);
-    animationReady = Number.isFinite(animationDuration) && animationDuration > 0;
+    const loadToken = ++animationLoadToken;
+    const availableAnimations = model.availableAnimations ?? [];
 
     if (model.pause) {
       model.pause();
     }
 
-    if (animationReady && typeof model.currentTime === "number") {
-      model.currentTime = 0;
+    if (availableAnimations.length === 0) {
+      animationDuration = Number(model.duration ?? 0);
+      animationReady = Number.isFinite(animationDuration) && animationDuration > 0;
+      wheelAnimationTime = 0;
+      if (animationReady && typeof model.currentTime === "number") {
+        model.currentTime = 0;
+      }
+      return;
     }
+
+    void (async () => {
+      let bestName = availableAnimations[0];
+      let bestDuration = 0;
+
+      for (const candidate of availableAnimations) {
+        model.animationName = candidate;
+        await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+        const candidateDuration = Number(model.duration ?? 0);
+        const isEmpty = candidate.toLowerCase().includes("empty");
+        const currentBestIsEmpty = bestName.toLowerCase().includes("empty");
+
+        if (
+          candidateDuration > bestDuration ||
+          (candidateDuration === bestDuration && !isEmpty && currentBestIsEmpty)
+        ) {
+          bestName = candidate;
+          bestDuration = candidateDuration;
+        }
+      }
+
+      model.animationName = bestName;
+      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+      const resolvedDuration = Number(model.duration ?? bestDuration);
+
+      if (loadToken !== animationLoadToken) {
+        return;
+      }
+
+      animationDuration = resolvedDuration;
+      animationReady = Number.isFinite(animationDuration) && animationDuration > 0;
+      wheelAnimationTime = 0;
+      if (animationReady && typeof model.currentTime === "number") {
+        model.currentTime = 0;
+      }
+    })();
   };
 
   const bottomRevealProgress = (): number => {
@@ -242,28 +292,54 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
     smokeParticles = next;
   };
 
-  const updateModelAnimation = (combinedProgress: number): void => {
+  const updateModelAnimation = (deltaX: number): void => {
     if (!animationReady || typeof model.currentTime !== "number") {
       return;
     }
 
-    model.currentTime = clamp(combinedProgress, 0, 1) * animationDuration;
+    const distance = Math.abs(deltaX);
+    if (distance > 0.02) {
+      const spinMultiplier = returnStarted && !parked ? 0.007 : 0.0053;
+      wheelAnimationTime = (wheelAnimationTime + distance * spinMultiplier) % animationDuration;
+    }
+
+    model.currentTime = wheelAnimationTime;
   };
 
   const tick = (now: number): void => {
     rafId = window.requestAnimationFrame(tick);
 
+    if (!lastFrameTime) {
+      lastFrameTime = now;
+    }
+
+    const dtSeconds = clamp((now - lastFrameTime) / 1000, 1 / 120, 1 / 20);
+    lastFrameTime = now;
+
     if (hidden) {
       return;
     }
 
-    const dtSeconds = 1 / 60;
-
     if (!returnStarted && !sequenceFinished) {
       const reveal = bottomRevealProgress();
-      outboundTargetMax = Math.max(outboundTargetMax, reveal);
-      outboundProgress += (outboundTargetMax - outboundProgress) * 0.08;
-      outboundProgress = clamp(outboundProgress, 0, 1);
+      if (!triggerArmed && reveal >= 0.07) {
+        triggerArmed = true;
+        triggerReleaseAt = now + triggerDelayMs;
+        triggerRevealSnapshot = Math.max(reveal, 0.22);
+      }
+
+      if (!triggerReady && triggerArmed && now >= triggerReleaseAt) {
+        triggerReady = true;
+        outboundTargetMax = Math.max(outboundTargetMax, triggerRevealSnapshot);
+      }
+
+      if (triggerReady) {
+        outboundTargetMax = Math.max(outboundTargetMax, reveal);
+        outboundProgress += (outboundTargetMax - outboundProgress) * 0.08;
+        outboundProgress = clamp(outboundProgress, 0, 1);
+      } else {
+        outboundProgress = 0;
+      }
 
       if (outboundProgress > 0.02) {
         runner.dataset.active = "true";
@@ -291,13 +367,14 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
       if (returnProgress >= 1) {
         parked = true;
         sequenceFinished = true;
+        parkedAtTime = now;
       }
     }
 
     const trackWidth = track.offsetWidth || width * 0.28;
     const startRight = width + trackWidth * 1.15;
     const offLeft = -trackWidth * 1.25;
-    const parkedRight = width - trackWidth * 1.15;
+    const parkedRight = width - trackWidth * 1.28;
 
     const outboundEased = easeInOutCubic(outboundProgress);
     const outboundX = startRight + (offLeft - startRight) * outboundEased;
@@ -305,9 +382,15 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
     const returnX = offLeft + (parkedRight - offLeft) * returnEased;
 
     const x = returnStarted ? returnX : outboundX;
+    if (!Number.isFinite(lastTrackX)) {
+      lastTrackX = x;
+    }
+    const deltaX = x - lastTrackX;
+    lastTrackX = x;
+
     const lift = -48 * wheelieAmount;
     const tilt = (returnStarted ? 6 : 0) + (returnStarted ? -12 : 12) * wheelieAmount;
-    const scale = returnStarted ? 1.12 + returnEased * 0.09 : 1.08;
+    const scale = returnStarted ? 1.06 - returnEased * 0.2 : 1.02;
     const mirror = returnStarted ? 1 : -1;
     const opacityTarget = parked ? 0.95 : 1;
     const currentOpacity = Number(track.dataset.opacity ?? "0");
@@ -324,20 +407,21 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
     track.style.transform = `translate3d(${x.toFixed(2)}px, ${lift.toFixed(2)}px, 0) rotate(${tilt.toFixed(2)}deg) scale(${scale.toFixed(3)}) scaleX(${mirror})`;
 
     if (parked) {
-      model.setAttribute("camera-orbit", "-58deg 75deg 56%");
-      model.setAttribute("field-of-view", "22deg");
+      const showcaseElapsed = Math.max(0, now - parkedAtTime - showcaseStartDelayMs);
+      const showcaseSpin = (showcaseElapsed / 1000) * showcaseSpinSpeedDegPerSecond;
+      const showcaseOrbit = -58 + showcaseSpin;
+      const showcasePitch = 77 + Math.sin(showcaseElapsed / 1000) * 1.1;
+      model.setAttribute("camera-orbit", `${showcaseOrbit.toFixed(2)}deg ${showcasePitch.toFixed(2)}deg 84%`);
+      model.setAttribute("field-of-view", "30deg");
     } else if (returnStarted) {
-      model.setAttribute("camera-orbit", "-72deg 76deg 62%");
-      model.setAttribute("field-of-view", "23deg");
+      model.setAttribute("camera-orbit", "-72deg 76deg 72%");
+      model.setAttribute("field-of-view", "26deg");
     } else {
-      model.setAttribute("camera-orbit", "-92deg 77deg 66%");
-      model.setAttribute("field-of-view", "24deg");
+      model.setAttribute("camera-orbit", "-92deg 77deg 70%");
+      model.setAttribute("field-of-view", "25deg");
     }
 
-    const combinedAnimationProgress = returnStarted
-      ? 0.6 + returnProgress * 0.4
-      : outboundProgress * 0.6;
-    updateModelAnimation(combinedAnimationProgress);
+    updateModelAnimation(deltaX);
 
     spawnSmoke(dtSeconds, motionSign, returnStarted && !parked);
     renderSmoke(dtSeconds);
@@ -362,5 +446,12 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
     track.style.opacity = "0";
     track.dataset.motionBlur = "0";
     track.style.setProperty("--motorcycle-motion-blur", "0px");
+    lastTrackX = Number.NaN;
+    lastFrameTime = 0;
+    triggerArmed = false;
+    triggerReady = false;
+    triggerReleaseAt = 0;
+    triggerRevealSnapshot = 0;
+    parkedAtTime = 0;
   };
 }

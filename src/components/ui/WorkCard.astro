@@ -13,8 +13,12 @@ const { item, priority = false, showModelPreview = false } = Astro.props;
 const alt = `${item.title} welded metal artwork`;
 const storeImages = item.storeImages ?? [];
 const hasSlideshow = storeImages.length > 1;
+const enableSlideshow = hasSlideshow && !showModelPreview;
 const slideshowIntervalMs = 3200;
 const hasModelPreview = showModelPreview && Boolean(item.model3dSrc);
+const surroundSlots = ["tl", "t", "tr", "l", "r", "bl", "b", "br"] as const;
+const surroundingImages =
+  storeImages.length > 0 ? surroundSlots.map((_, index) => storeImages[index % storeImages.length]) : [];
 ---
 
 <article
@@ -24,38 +28,10 @@ const hasModelPreview = showModelPreview && Boolean(item.model3dSrc);
   data-model-preview={hasModelPreview ? "true" : "false"}
 >
   <a class={styles.link} href={`/work/${item.slug}`}>
-    <div class={styles.media} data-work-card-slideshow={hasSlideshow ? true : undefined} data-interval-ms={slideshowIntervalMs}>
-      {
-        hasSlideshow ? (
-          storeImages.map((image, index) => (
-            <img
-              src={encodeURI(image)}
-              alt={`${item.title} view ${index + 1}`}
-              class={styles.slide}
-              data-slide
-              data-active={index === 0 ? "true" : "false"}
-              loading={priority && index === 0 ? "eager" : "lazy"}
-            />
-          ))
-        ) : storeImages.length === 1 ? (
-          <img src={encodeURI(storeImages[0])} alt={alt} class={styles.image} loading={priority ? "eager" : "lazy"} />
-        ) : (
-          <Image
-            src={item.coverImage}
-            alt={alt}
-            class={styles.image}
-            loading={priority ? "eager" : "lazy"}
-            fetchpriority={priority ? "high" : "auto"}
-            sizes="(min-width: 1200px) 33vw, (min-width: 700px) 50vw, 100vw"
-            width={1200}
-            height={800}
-          />
-        )
-      }
-
-      {
-        hasModelPreview && (
-          <div class={styles.modelInset} aria-hidden="true">
+    {
+      hasModelPreview ? (
+        <div class={styles.modelMedia}>
+          <div class={styles.modelFrame} aria-hidden="true">
             <span class={styles.modelLabel}>3D Preview</span>
             <model-viewer
               src={encodeURI(item.model3dSrc!)}
@@ -68,9 +44,50 @@ const hasModelPreview = showModelPreview && Boolean(item.model3dSrc);
               exposure="1.05"
             />
           </div>
-        )
-      }
-    </div>
+          {
+            surroundingImages.map((image, index) => (
+              <img
+                src={encodeURI(image)}
+                alt={`${item.title} detail ${index + 1}`}
+                class={styles.gridThumb}
+                data-slot={surroundSlots[index]}
+                loading={priority && index === 0 ? "eager" : "lazy"}
+              />
+            ))
+          }
+        </div>
+      ) : (
+        <div class={styles.media} data-work-card-slideshow={enableSlideshow ? true : undefined} data-interval-ms={slideshowIntervalMs}>
+          {
+            enableSlideshow ? (
+              storeImages.map((image, index) => (
+                <img
+                  src={encodeURI(image)}
+                  alt={`${item.title} view ${index + 1}`}
+                  class={styles.slide}
+                  data-slide
+                  data-active={index === 0 ? "true" : "false"}
+                  loading={priority && index === 0 ? "eager" : "lazy"}
+                />
+              ))
+            ) : storeImages.length === 1 ? (
+              <img src={encodeURI(storeImages[0])} alt={alt} class={styles.image} loading={priority ? "eager" : "lazy"} />
+            ) : (
+              <Image
+                src={item.coverImage}
+                alt={alt}
+                class={styles.image}
+                loading={priority ? "eager" : "lazy"}
+                fetchpriority={priority ? "high" : "auto"}
+                sizes="(min-width: 1200px) 33vw, (min-width: 700px) 50vw, 100vw"
+                width={1200}
+                height={800}
+              />
+            )
+          }
+        </div>
+      )
+    }
     <div class={styles.body}>
       <h3>{item.title}</h3>
       {item.price && <p class={styles.price}>{item.price}</p>}
@@ -81,7 +98,7 @@ const hasModelPreview = showModelPreview && Boolean(item.model3dSrc);
 </article>
 
 {
-  hasSlideshow && (
+  enableSlideshow && (
     <script>
       (() => {
         if (window["__whiteHotWorkCardSlideshowInitialized"]) {

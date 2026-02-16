@@ -21,6 +21,16 @@ const medium = work.medium ?? work.materials;
 const storeImages = work.storeImages ?? [];
 const hasStoreGallery = storeImages.length > 0;
 const galleryIntervalMs = 4200;
+const aboutText = work.aboutItem ?? work.excerpt;
+const makerMentionedInAbout = (() => {
+  if (!work.maker) {
+    return false;
+  }
+
+  const escapedMaker = work.maker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const makerPattern = new RegExp(`\\bmade\\s+by\\s+${escapedMaker}\\b`, "i");
+  return makerPattern.test(aboutText);
+})();
 ---
 
 <SiteLayout title={work.title} description={work.excerpt} effectPreset="work">
@@ -80,8 +90,8 @@ const galleryIntervalMs = 4200;
 
     <section class="detail-block" data-reveal>
       <h2>About this item</h2>
-      <p>{work.aboutItem ?? work.excerpt}</p>
-      {work.maker && <p class="maker">This piece was made by {work.maker}.</p>}
+      <p>{aboutText}</p>
+      {work.maker && !makerMentionedInAbout && <p class="maker">This piece was made by {work.maker}.</p>}
       {work.showFullDescriptionLabel && (
         <a class="show-description" href="#full-description">
           {work.showFullDescriptionLabel}

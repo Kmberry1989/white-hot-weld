@@ -7,6 +7,10 @@ import { getAllWork, getPageContent } from "../../lib/content";
 const page = await getPageContent("gallery");
 const work = await getAllWork();
 const hasModelPreview = work.some((item) => Boolean(item.model3dSrc));
+const sectionKicker =
+  page.data.eyebrow && page.data.eyebrow.trim().toLowerCase() !== page.data.title.trim().toLowerCase()
+    ? page.data.eyebrow
+    : undefined;
 const { Content } = await page.render();
 ---
 
@@ -19,7 +23,7 @@ const { Content } = await page.render();
 >
   {hasModelPreview && <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>}
 
-  <Section id="gallery" kicker={page.data.eyebrow} title={page.data.title} lede={page.data.description}>
+  <Section id="gallery" kicker={sectionKicker} title={page.data.title} lede={page.data.description}>
     <div class="prose" data-reveal>
       <Content />
     </div>
@@ -48,7 +52,7 @@ const { Content } = await page.render();
 
   @media (min-width: 52rem) {
     .grid {
-      grid-template-columns: minmax(0, min(92vw, 52rem));
+      grid-template-columns: minmax(0, min(96vw, 76rem));
     }
   }
 </style>
