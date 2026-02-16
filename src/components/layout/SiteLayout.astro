@@ -67,11 +67,30 @@ const pageDescription =
       />
     </div>
 
+    <div class="motorcycle-runner" data-motorcycle-runner aria-hidden="true">
+      <canvas class="motorcycle-smoke-canvas" data-motorcycle-smoke></canvas>
+      <div class="motorcycle-track" data-motorcycle-track>
+        <model-viewer
+          class="motorcycle-model"
+          data-motorcycle-model
+          src="/models/motorcycle.glb"
+          interaction-prompt="none"
+          disable-zoom
+          disable-pan
+          shadow-intensity="1.05"
+          exposure="1.08"
+          camera-orbit="-86deg 78deg 98%"
+          field-of-view="29deg"
+        />
+      </div>
+    </div>
+
     <script>
       import { initForgeShader } from "../../scripts/effects/forgeShader";
       import { initHoverFx } from "../../scripts/effects/hoverFx";
       import { initPageMotion } from "../../scripts/effects/pageMotion";
       import { initArcFlash } from "../../scripts/effects/arcFlash";
+      import { initMotorcycleRide } from "../../scripts/effects/motorcycleRide";
 
       const bootstrapEffects = () => {
         const layer = document.querySelector("[data-forge-shader]");
@@ -82,6 +101,7 @@ const pageDescription =
           const disabled = body.dataset.effectsDisabled === "true";
           initForgeShader(layer, preset, disabled);
           initArcFlash(layer, preset, disabled);
+          initMotorcycleRide(layer, preset, disabled);
         }
 
         initHoverFx();

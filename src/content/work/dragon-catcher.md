@@ -12,6 +12,15 @@ price: "$65"
 excerpt: A handmade metal piece that brings a playful, whimsical accent to a room.
 featured: true
 coverImage: dragon-catcher.jpg
+storeImages:
+  - /images/library/store/dragon catcher/dragon_catcher_1.jpg
+  - /images/library/store/dragon catcher/dragon_catcher_2.jpg
+  - /images/library/store/dragon catcher/dragon_catcher_3.jpg
+  - /images/library/store/dragon catcher/dragon_catcher_4.jpg
+  - /images/library/store/dragon catcher/dragon_catcher_5.jpg
+  - /images/library/store/dragon catcher/dragon_catcher_6.jpg
+  - /images/library/store/dragon catcher/dragon_catcher_7.jpg
+model3dSrc: /images/library/store/dragon catcher/dragon catcher.glb
 status: available
 maker: John
 aboutItem: The "Dragonfly Catcher" is a handmade piece of art that will bring a bit of whimsy to any room in your home or office. This piece was made by John.

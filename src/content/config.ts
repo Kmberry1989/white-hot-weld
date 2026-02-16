@@ -39,6 +39,8 @@ const work = defineCollection({
     featured: z.boolean(),
     coverImage: z.string(),
     galleryImages: z.array(z.string()).optional(),
+    storeImages: z.array(z.string()).optional(),
+    model3dSrc: z.string().optional(),
     maker: z.string().optional(),
     aboutItem: z.string().optional(),
     showFullDescriptionLabel: z.string().optional(),

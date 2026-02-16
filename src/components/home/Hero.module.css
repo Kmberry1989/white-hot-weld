@@ -1,16 +1,117 @@
 .hero {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
   padding-block: var(--space-8);
+  min-height: clamp(34rem, 82vh, 56rem);
 }
 
 .container {
+  position: relative;
+  z-index: 2;
   display: grid;
   gap: var(--space-6);
+}
+
+.backgroundFx {
+  position: absolute;
+  inset: -8% -6% -14%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.shadowVignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 67% 36%, rgba(248, 125, 68, 0.22), transparent 36%),
+    radial-gradient(circle at 82% 72%, rgba(62, 134, 180, 0.2), transparent 40%),
+    linear-gradient(165deg, rgba(5, 8, 13, 0.06), rgba(5, 8, 13, 0.72) 68%, rgba(5, 8, 13, 0.9));
+}
+
+.dragonStage {
+  --dragon-scale: 1;
+  --dragon-dynamic-blur: 2.8px;
+  --dragon-obscure-opacity: 1;
+  position: absolute;
+  inset: 10% 36% -2% -11%;
+  opacity: var(--dragon-obscure-opacity);
+  transform: scale(var(--dragon-scale));
+  transform-origin: 38% 58%;
+  transition:
+    transform 260ms ease,
+    opacity 340ms ease;
+  filter:
+    drop-shadow(0 34px 54px rgba(0, 0, 0, 0.66))
+    drop-shadow(0 0 34px rgba(224, 101, 47, 0.28));
+}
+
+.dragonModel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: center;
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(var(--dragon-dynamic-blur));
+  transition:
+    opacity 380ms ease,
+    filter 320ms ease;
+  will-change: filter, opacity;
+}
+
+.dragonMain {
+  animation:
+    dragon-fade-main 14s ease-in-out infinite,
+    dragon-drift-main 28s ease-in-out infinite;
+}
+
+.dragonGhost {
+  filter: blur(calc(1.4px + var(--dragon-dynamic-blur))) saturate(1.28);
+  animation:
+    dragon-fade-ghost 14s ease-in-out infinite,
+    dragon-drift-ghost 32s ease-in-out infinite;
+  transform: scale(1.04) translateX(2%);
+}
+
+.sparkField {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+}
+
+.spark {
+  position: absolute;
+  left: var(--spark-left);
+  top: var(--spark-top);
+  width: var(--spark-size);
+  height: calc(var(--spark-size) * 8.5);
+  border-radius: 999px;
+  background: linear-gradient(to top, rgba(255, 136, 70, 0), rgba(255, 160, 94, 0.95) 55%, rgba(255, 222, 176, 0.95));
+  box-shadow: 0 0 12px rgba(255, 149, 82, 0.55);
+  opacity: 0;
+  transform: translate3d(0, 0, 0) rotate(var(--spark-rotate));
+  animation: spark-flight var(--spark-duration) linear infinite;
+  animation-delay: calc(var(--spark-delay) * -1);
+}
+
+.flashWash {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 64% 44%, rgba(255, 239, 232, 0.17), rgba(255, 163, 108, 0.1) 24%, transparent 52%),
+    radial-gradient(circle at 42% 56%, rgba(106, 195, 255, 0.09), transparent 48%);
+  mix-blend-mode: screen;
+  animation: flash-pulse 8s ease-in-out infinite;
 }
 
 .copy {
   display: grid;
   gap: var(--space-4);
   max-width: 54ch;
+  text-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
 }
 
 .eyebrow {
@@ -63,10 +164,16 @@
 }
 
 .mediaWrap {
+  position: relative;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: clip;
-  background: var(--color-bg-elevated);
+  background:
+    linear-gradient(170deg, rgba(255, 255, 255, 0.04), rgba(4, 8, 14, 0.84)),
+    var(--color-bg-elevated);
+  box-shadow:
+    0 28px 50px rgba(0, 0, 0, 0.46),
+    0 0 34px rgba(224, 101, 47, 0.17);
 }
 
 .media {
@@ -76,9 +183,136 @@
   opacity: 0.95;
 }
 
+@keyframes dragon-fade-main {
+  0%,
+  24% {
+    opacity: 0.14;
+  }
+
+  46% {
+    opacity: 0.55;
+  }
+
+  70% {
+    opacity: 0.2;
+  }
+
+  100% {
+    opacity: 0.14;
+  }
+}
+
+@keyframes dragon-fade-ghost {
+  0%,
+  18% {
+    opacity: 0;
+  }
+
+  42% {
+    opacity: 0.36;
+  }
+
+  68% {
+    opacity: 0.08;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes dragon-drift-main {
+  0% {
+    transform: translate3d(1.2%, 0.9%, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(-1.8%, -1.1%, 0) scale(1.03);
+  }
+
+  100% {
+    transform: translate3d(1.2%, 0.9%, 0) scale(1);
+  }
+}
+
+@keyframes dragon-drift-ghost {
+  0% {
+    transform: scale(1.04) translate3d(2%, 1.2%, 0);
+  }
+
+  50% {
+    transform: scale(1.07) translate3d(-1.1%, -0.9%, 0);
+  }
+
+  100% {
+    transform: scale(1.04) translate3d(2%, 1.2%, 0);
+  }
+}
+
+@keyframes spark-flight {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(var(--spark-rotate)) scale(0.64);
+  }
+
+  8% {
+    opacity: 0.85;
+  }
+
+  72% {
+    opacity: 0.54;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--spark-drift), calc(-1 * var(--spark-rise)), 0) rotate(calc(var(--spark-rotate) - 6deg))
+      scale(0.44);
+  }
+}
+
+@keyframes flash-pulse {
+  0%,
+  100% {
+    opacity: 0.24;
+  }
+
+  48% {
+    opacity: 0.58;
+  }
+}
+
 @media (min-width: 62rem) {
   .container {
     grid-template-columns: 1.1fr 0.9fr;
     align-items: center;
+  }
+}
+
+@media (max-width: 61.99rem) {
+  .dragonStage {
+    inset: 18% 8% 10% -31%;
+    transform-origin: 40% 56%;
+  }
+
+  .flashWash {
+    opacity: 0.72;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dragonMain,
+  .dragonGhost,
+  .spark,
+  .flashWash {
+    animation: none;
+  }
+
+  .dragonMain {
+    opacity: 0.28;
+  }
+
+  .dragonGhost,
+  .spark {
+    opacity: 0;
   }
 }

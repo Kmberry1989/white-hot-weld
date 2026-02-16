@@ -45,4 +45,6 @@ export interface WorkSummary {
   dimensions: string;
   price?: string;
   coverImage: ImageMetadata;
+  storeImages?: string[];
+  model3dSrc?: string;
 }

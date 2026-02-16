@@ -6,7 +6,7 @@ body {
 
 body[data-effect-preset="home"] {
   --fx-temperature: 1;
-  --fx-overlay-opacity: 0.24;
+  --fx-overlay-opacity: 0.29;
 }
 
 body[data-effect-preset="gallery"] {
@@ -32,6 +32,10 @@ body[data-effect-preset="inner"] {
   opacity: calc(0.42 + (var(--fx-temperature) * 0.18));
 }
 
+body[data-effect-preset="home"] .forge-shader-layer {
+  opacity: 0.74;
+}
+
 .forge-shader-layer[data-active="false"] {
   display: none;
 }
@@ -51,6 +55,59 @@ body[data-effect-preset="inner"] {
   pointer-events: none;
   mix-blend-mode: screen;
   opacity: calc(0.6 + (var(--fx-temperature) * 0.22));
+}
+
+body[data-effect-preset="home"] .arc-flash-canvas {
+  opacity: 0.96;
+  filter: saturate(1.22) drop-shadow(0 0 14px rgba(255, 173, 110, 0.42));
+}
+
+.motorcycle-runner {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  overflow: clip;
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+
+.motorcycle-runner[data-active="true"] {
+  opacity: 1;
+}
+
+.motorcycle-smoke-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.78;
+}
+
+.motorcycle-track {
+  --motorcycle-motion-blur: 0px;
+  position: absolute;
+  left: 0;
+  bottom: clamp(0.2rem, 1.2vh, 1rem);
+  width: clamp(18rem, 32vw, 31rem);
+  height: clamp(9rem, 17vw, 17rem);
+  opacity: 0;
+  transform: translate3d(130vw, 0, 0) scale(1.06) scaleX(-1);
+  transform-origin: 38% 90%;
+  will-change: transform, opacity;
+  filter:
+    blur(var(--motorcycle-motion-blur))
+    drop-shadow(0 22px 28px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 20px rgba(255, 150, 92, 0.2));
+}
+
+.motorcycle-model {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: transparent;
 }
 
 .site-shell {

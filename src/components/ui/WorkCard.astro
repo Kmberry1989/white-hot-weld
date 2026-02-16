@@ -6,24 +6,71 @@ import styles from "./WorkCard.module.css";
 interface Props {
   item: WorkSummary;
   priority?: boolean;
+  showModelPreview?: boolean;
 }
 
-const { item, priority = false } = Astro.props;
+const { item, priority = false, showModelPreview = false } = Astro.props;
 const alt = `${item.title} welded metal artwork`;
+const storeImages = item.storeImages ?? [];
+const hasSlideshow = storeImages.length > 1;
+const slideshowIntervalMs = 3200;
+const hasModelPreview = showModelPreview && Boolean(item.model3dSrc);
 ---
 
-<article class={styles.card} data-hover-card data-reveal>
+<article
+  class={styles.card}
+  data-hover-card
+  data-reveal
+  data-model-preview={hasModelPreview ? "true" : "false"}
+>
   <a class={styles.link} href={`/work/${item.slug}`}>
-    <Image
-      src={item.coverImage}
-      alt={alt}
-      class={styles.image}
-      loading={priority ? "eager" : "lazy"}
-      fetchpriority={priority ? "high" : "auto"}
-      sizes="(min-width: 1200px) 33vw, (min-width: 700px) 50vw, 100vw"
-      width={1200}
-      height={800}
-    />
+    <div class={styles.media} data-work-card-slideshow={hasSlideshow ? true : undefined} data-interval-ms={slideshowIntervalMs}>
+      {
+        hasSlideshow ? (
+          storeImages.map((image, index) => (
+            <img
+              src={encodeURI(image)}
+              alt={`${item.title} view ${index + 1}`}
+              class={styles.slide}
+              data-slide
+              data-active={index === 0 ? "true" : "false"}
+              loading={priority && index === 0 ? "eager" : "lazy"}
+            />
+          ))
+        ) : storeImages.length === 1 ? (
+          <img src={encodeURI(storeImages[0])} alt={alt} class={styles.image} loading={priority ? "eager" : "lazy"} />
+        ) : (
+          <Image
+            src={item.coverImage}
+            alt={alt}
+            class={styles.image}
+            loading={priority ? "eager" : "lazy"}
+            fetchpriority={priority ? "high" : "auto"}
+            sizes="(min-width: 1200px) 33vw, (min-width: 700px) 50vw, 100vw"
+            width={1200}
+            height={800}
+          />
+        )
+      }
+
+      {
+        hasModelPreview && (
+          <div class={styles.modelInset} aria-hidden="true">
+            <span class={styles.modelLabel}>3D Preview</span>
+            <model-viewer
+              src={encodeURI(item.model3dSrc!)}
+              poster={storeImages[0] ? encodeURI(storeImages[0]) : undefined}
+              class={styles.modelViewer}
+              auto-rotate
+              interaction-prompt="none"
+              disable-zoom
+              shadow-intensity="0.8"
+              exposure="1.05"
+            />
+          </div>
+        )
+      }
+    </div>
     <div class={styles.body}>
       <h3>{item.title}</h3>
       {item.price && <p class={styles.price}>{item.price}</p>}
@@ -32,3 +79,70 @@ const alt = `${item.title} welded metal artwork`;
     </div>
   </a>
 </article>
+
+{
+  hasSlideshow && (
+    <script>
+      (() => {
+        if (window["__whiteHotWorkCardSlideshowInitialized"]) {
+          return;
+        }
+
+        window["__whiteHotWorkCardSlideshowInitialized"] = true;
+
+        const initSlideshows = () => {
+          document.querySelectorAll("[data-work-card-slideshow]").forEach((slideshow) => {
+            if (slideshow.dataset.bound === "true") {
+              return;
+            }
+
+            const slides = Array.from(slideshow.querySelectorAll("[data-slide]"));
+
+            if (slides.length < 2) {
+              slideshow.dataset.bound = "true";
+              return;
+            }
+
+            const intervalMs = Number(slideshow.getAttribute("data-interval-ms")) || 3200;
+            let index = 0;
+            const setActive = (nextIndex) => {
+              index = nextIndex;
+              slides.forEach((slide, slideIndex) => {
+                slide.setAttribute("data-active", slideIndex === index ? "true" : "false");
+              });
+            };
+
+            let timerId = window.setInterval(() => {
+              setActive((index + 1) % slides.length);
+            }, intervalMs);
+
+            const stop = () => {
+              window.clearInterval(timerId);
+            };
+
+            const start = () => {
+              stop();
+              timerId = window.setInterval(() => {
+                setActive((index + 1) % slides.length);
+              }, intervalMs);
+            };
+
+            slideshow.addEventListener("mouseenter", stop);
+            slideshow.addEventListener("mouseleave", start);
+            slideshow.addEventListener("focusin", stop);
+            slideshow.addEventListener("focusout", start);
+            slideshow.dataset.bound = "true";
+          });
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initSlideshows, { once: true });
+        } else {
+          initSlideshows();
+        }
+
+        document.addEventListener("astro:after-swap", initSlideshows);
+      })();
+    </script>
+  )
+}

@@ -6,6 +6,7 @@ import { getAllWork, getPageContent } from "../../lib/content";
 
 const page = await getPageContent("gallery");
 const work = await getAllWork();
+const hasModelPreview = work.some((item) => Boolean(item.model3dSrc));
 const { Content } = await page.render();
 ---
 
@@ -16,6 +17,8 @@ const { Content } = await page.render();
   seoDescription={page.data.seoDescription}
   effectPreset="gallery"
 >
+  {hasModelPreview && <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>}
+
   <Section id="gallery" kicker={page.data.eyebrow} title={page.data.title} lede={page.data.description}>
     <div class="prose" data-reveal>
       <Content />
@@ -24,7 +27,7 @@ const { Content } = await page.render();
     <div class="grid">
       {
         work.map((item, index) => (
-          <WorkCard item={item} priority={index === 0} />
+          <WorkCard item={item} priority={index === 0} showModelPreview />
         ))
       }
     </div>
@@ -45,7 +48,7 @@ const { Content } = await page.render();
 
   @media (min-width: 52rem) {
     .grid {
-      grid-template-columns: minmax(0, 34rem);
+      grid-template-columns: minmax(0, min(92vw, 52rem));
     }
   }
 </style>

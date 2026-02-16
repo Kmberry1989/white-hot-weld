@@ -10,12 +10,83 @@ interface Props {
   primaryCta: CtaLink;
   secondaryCta?: CtaLink;
   media?: HeroMedia;
+  dragonModelSrc?: string;
+  dragonPosterSrc?: string;
 }
 
-const { eyebrow, title, subtitle, primaryCta, secondaryCta, media } = Astro.props;
+const {
+  eyebrow,
+  title,
+  subtitle,
+  primaryCta,
+  secondaryCta,
+  media,
+  dragonModelSrc = "/models/dragon.glb",
+  dragonPosterSrc
+} = Astro.props;
+
+const sparks = Array.from({ length: 22 }, (_, index) => {
+  const left = (index * 17.9) % 100;
+  const top = 56 + ((index * 11.7) % 36);
+  const delay = (index * 0.43) % 4.8;
+  const duration = 2.4 + (index % 6) * 0.42;
+  const size = 1.2 + (index % 4) * 0.65;
+  const drift = 20 + (index % 5) * 14;
+  const rise = 38 + (index % 7) * 14;
+  const rotate = -32 + (index % 8) * 8;
+
+  return { left, top, delay, duration, size, drift, rise, rotate };
+});
 ---
 
-<section class={styles.hero}>
+<section class={styles.hero} data-dragon-hero>
+  <div class={styles.backgroundFx} aria-hidden="true">
+    <div class={styles.shadowVignette}></div>
+    <div class={styles.dragonStage} data-dragon-stage>
+      <model-viewer
+        src={dragonModelSrc}
+        poster={dragonPosterSrc}
+        class={`${styles.dragonModel} ${styles.dragonMain}`}
+        data-dragon-model
+        autoplay
+        animation-speed="0.74"
+        interaction-prompt="none"
+        disable-zoom
+        disable-pan
+        auto-rotate
+        auto-rotate-delay="0"
+        shadow-intensity="1.15"
+        exposure="1.15"
+      />
+      <model-viewer
+        src={dragonModelSrc}
+        poster={dragonPosterSrc}
+        class={`${styles.dragonModel} ${styles.dragonGhost}`}
+        data-dragon-model
+        autoplay
+        animation-speed="0.7"
+        interaction-prompt="none"
+        disable-zoom
+        disable-pan
+        auto-rotate
+        auto-rotate-delay="0"
+        shadow-intensity="0.9"
+        exposure="1.2"
+      />
+    </div>
+    <div class={styles.sparkField}>
+      {
+        sparks.map((spark) => (
+          <span
+            class={styles.spark}
+            style={`--spark-left:${spark.left}%; --spark-top:${spark.top}%; --spark-delay:${spark.delay}s; --spark-duration:${spark.duration}s; --spark-size:${spark.size}px; --spark-drift:${spark.drift}px; --spark-rise:${spark.rise}px; --spark-rotate:${spark.rotate}deg;`}
+          ></span>
+        ))
+      }
+    </div>
+    <div class={styles.flashWash}></div>
+  </div>
+
   <PageContainer size="wide" className={styles.container}>
     <div class={styles.copy} data-reveal>
       {eyebrow && <p class={styles.eyebrow}>{eyebrow}</p>}
@@ -38,3 +109,165 @@ const { eyebrow, title, subtitle, primaryCta, secondaryCta, media } = Astro.prop
     )}
   </PageContainer>
 </section>
+
+<script>
+  (() => {
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+    const initDragonHero = () => {
+      document.querySelectorAll("[data-dragon-hero]").forEach((hero) => {
+        if (!(hero instanceof HTMLElement) || hero.dataset.dragonBound === "true") {
+          return;
+        }
+
+        const stage = hero.querySelector("[data-dragon-stage]");
+        const models = Array.from(hero.querySelectorAll("model-viewer[data-dragon-model]"));
+
+        if (!(stage instanceof HTMLElement) || models.length === 0) {
+          hero.dataset.dragonBound = "true";
+          return;
+        }
+
+        const state = {
+          x: 0,
+          y: 0,
+          mx: 0,
+          my: 0,
+          tx: 0,
+          ty: 0,
+          blur: 2.8,
+          zoom: 1,
+          radius: 116
+        };
+
+        let active = false;
+        let rafId = 0;
+
+        const setTargetFromPointer = (event) => {
+          if (!(event instanceof PointerEvent)) {
+            return;
+          }
+
+          const rect = hero.getBoundingClientRect();
+          if (rect.width < 1 || rect.height < 1) {
+            return;
+          }
+
+          const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          const ny = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+
+          state.mx = clamp(nx, -1, 1);
+          state.my = clamp(ny, -1, 1);
+          active = true;
+        };
+
+        const deactivate = () => {
+          active = false;
+        };
+
+        const onWindowBlur = () => {
+          deactivate();
+        };
+
+        const onVisibility = () => {
+          if (document.hidden) {
+            deactivate();
+          }
+        };
+
+        const onPointerDown = (event) => {
+          setTargetFromPointer(event);
+        };
+
+        const onPointerMove = (event) => {
+          setTargetFromPointer(event);
+        };
+
+        const onPointerUp = () => {
+          deactivate();
+        };
+
+        const onPointerLeave = () => {
+          deactivate();
+        };
+
+        const tick = () => {
+          if (!document.body.contains(hero)) {
+            cleanup();
+            return;
+          }
+
+          rafId = window.requestAnimationFrame(tick);
+
+          const rect = hero.getBoundingClientRect();
+          const scrollProgress = clamp(Math.max(0, -rect.top) / Math.max(rect.height * 0.9, 1), 0, 1);
+
+          state.tx += (state.mx - state.tx) * 0.16;
+          state.ty += (state.my - state.ty) * 0.16;
+          state.x += (state.tx - state.x) * 0.08;
+          state.y += (state.ty - state.y) * 0.08;
+
+          const targetZoom = active ? 1.06 : 1;
+          const targetRadius = active ? 98 : 116;
+          const targetBlur = (active ? 0.22 : 2.8) + scrollProgress * 6.4;
+
+          state.zoom += (targetZoom - state.zoom) * 0.065;
+          state.radius += (targetRadius - state.radius) * 0.065;
+          state.blur += (targetBlur - state.blur) * 0.075;
+
+          stage.style.setProperty("--dragon-scale", state.zoom.toFixed(3));
+          stage.style.setProperty("--dragon-dynamic-blur", `${state.blur.toFixed(2)}px`);
+          stage.style.setProperty("--dragon-obscure-opacity", `${(1 - scrollProgress * 0.5).toFixed(3)}`);
+
+          const thetaBase = -14 + state.x * 19;
+          const phiBase = 76 + state.y * -8;
+          const phi = clamp(phiBase, 58, 86);
+          const radius = `${state.radius.toFixed(1)}%`;
+
+          models.forEach((model, index) => {
+            if (!(model instanceof HTMLElement)) {
+              return;
+            }
+
+            const theta = thetaBase + (index === 0 ? 0 : 7);
+            const ghostPhi = clamp(phi - (index === 0 ? 0 : 1.8), 58, 86);
+            model.setAttribute("camera-orbit", `${theta.toFixed(2)}deg ${ghostPhi.toFixed(2)}deg ${radius}`);
+          });
+        };
+
+        const cleanup = () => {
+          window.cancelAnimationFrame(rafId);
+          hero.removeEventListener("pointerdown", onPointerDown);
+          hero.removeEventListener("pointermove", onPointerMove);
+          hero.removeEventListener("pointerup", onPointerUp);
+          hero.removeEventListener("pointercancel", onPointerUp);
+          hero.removeEventListener("pointerleave", onPointerLeave);
+          window.removeEventListener("blur", onWindowBlur);
+          document.removeEventListener("visibilitychange", onVisibility);
+          window.removeEventListener("scroll", deactivate);
+          hero.dataset.dragonBound = "false";
+        };
+
+        hero.addEventListener("pointerdown", onPointerDown, { passive: true });
+        hero.addEventListener("pointermove", onPointerMove, { passive: true });
+        hero.addEventListener("pointerup", onPointerUp, { passive: true });
+        hero.addEventListener("pointercancel", onPointerUp, { passive: true });
+        hero.addEventListener("pointerleave", onPointerLeave);
+        window.addEventListener("blur", onWindowBlur);
+        document.addEventListener("visibilitychange", onVisibility);
+        window.addEventListener("scroll", deactivate, { passive: true });
+
+        hero.dataset.dragonBound = "true";
+        tick();
+      });
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initDragonHero, { once: true });
+    } else {
+      initDragonHero();
+    }
+
+    document.addEventListener("astro:after-swap", initDragonHero);
+  })();
+</script>

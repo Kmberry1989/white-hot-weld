@@ -18,22 +18,44 @@ const { work } = Astro.props as { work: WorkItem };
 const { Content } = await work.entry.render();
 
 const medium = work.medium ?? work.materials;
+const storeImages = work.storeImages ?? [];
+const hasStoreGallery = storeImages.length > 0;
+const galleryIntervalMs = 4200;
 ---
 
 <SiteLayout title={work.title} description={work.excerpt} effectPreset="work">
+  {work.model3dSrc && <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>}
+
   <PageContainer size="wide" className="work-page">
     <a class="back-link" href="/gallery" data-reveal>← Back to shop</a>
 
     <div class="hero-media surface" data-reveal>
-      <Image
-        src={work.coverImage}
-        alt={`${work.title} main view`}
-        loading="eager"
-        fetchpriority="high"
-        width={1600}
-        height={1000}
-        class="cover"
-      />
+      {
+        work.model3dSrc ? (
+          <>
+            <model-viewer
+              src={encodeURI(work.model3dSrc)}
+              alt={`${work.title} 3D model`}
+              class="viewer"
+              camera-controls
+              auto-rotate
+              shadow-intensity="0.9"
+              exposure="1.1"
+            />
+            <p class="viewer-hint">Drag to rotate. Scroll to zoom.</p>
+          </>
+        ) : (
+          <Image
+            src={work.coverImage}
+            alt={`${work.title} main view`}
+            loading="eager"
+            fetchpriority="high"
+            width={1600}
+            height={1000}
+            class="cover"
+          />
+        )
+      }
     </div>
 
     <header class="header" data-reveal>
@@ -79,16 +101,142 @@ const medium = work.medium ?? work.materials;
     </section>
 
     {
-      work.galleryImages.length > 0 && (
+      hasStoreGallery ? (
         <section class="gallery" data-reveal>
           <h2>Details</h2>
-          <div class="gallery-grid">
-            {work.galleryImages.map((image) => <Image src={image} alt={`${work.title} detail`} loading="lazy" />)}
+          <div class="gallery-showcase" data-gallery-showcase data-gallery-interval-ms={galleryIntervalMs}>
+            <div class="gallery-stage">
+              {
+                storeImages.map((image, index) => (
+                  <figure class="gallery-slide" data-gallery-slide data-active={index === 0 ? "true" : "false"}>
+                    <img src={encodeURI(image)} alt={`${work.title} detail view ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} />
+                  </figure>
+                ))
+              }
+            </div>
+            <div class="gallery-thumbs" role="tablist" aria-label={`${work.title} image gallery`}>
+              {
+                storeImages.map((image, index) => (
+                  <button
+                    type="button"
+                    class="gallery-thumb"
+                    data-gallery-thumb
+                    data-gallery-index={index}
+                    data-active={index === 0 ? "true" : "false"}
+                    aria-label={`Show ${work.title} image ${index + 1}`}
+                  >
+                    <img src={encodeURI(image)} alt="" loading="lazy" />
+                  </button>
+                ))
+              }
+            </div>
           </div>
         </section>
+      ) : (
+        work.galleryImages.length > 0 && (
+          <section class="gallery" data-reveal>
+            <h2>Details</h2>
+            <div class="gallery-grid">
+              {work.galleryImages.map((image) => <Image src={image} alt={`${work.title} detail`} loading="lazy" />)}
+            </div>
+          </section>
+        )
       )
     }
   </PageContainer>
+  {
+    hasStoreGallery && (
+      <script>
+        (() => {
+          const initShowcases = () => {
+            document.querySelectorAll("[data-gallery-showcase]").forEach((showcase) => {
+              if (showcase.dataset.bound === "true") {
+                return;
+              }
+
+              const slides = Array.from(showcase.querySelectorAll("[data-gallery-slide]"));
+              const thumbs = Array.from(showcase.querySelectorAll("[data-gallery-thumb]"));
+
+              if (slides.length === 0) {
+                showcase.dataset.bound = "true";
+                return;
+              }
+
+              const intervalMs = Number(showcase.getAttribute("data-gallery-interval-ms")) || 4200;
+              let currentIndex = 0;
+
+              const setActive = (nextIndex) => {
+                currentIndex = nextIndex;
+
+                slides.forEach((slide, slideIndex) => {
+                  slide.setAttribute("data-active", slideIndex === currentIndex ? "true" : "false");
+                });
+
+                thumbs.forEach((thumb, thumbIndex) => {
+                  const active = thumbIndex === currentIndex;
+                  thumb.setAttribute("data-active", active ? "true" : "false");
+                  thumb.setAttribute("aria-current", active ? "true" : "false");
+                });
+              };
+
+              const advance = () => {
+                setActive((currentIndex + 1) % slides.length);
+              };
+
+              let timerId = slides.length > 1 ? window.setInterval(advance, intervalMs) : undefined;
+
+              const stop = () => {
+                if (timerId !== undefined) {
+                  window.clearInterval(timerId);
+                  timerId = undefined;
+                }
+              };
+
+              const start = () => {
+                if (slides.length < 2 || timerId !== undefined) {
+                  return;
+                }
+
+                timerId = window.setInterval(advance, intervalMs);
+              };
+
+              const restart = () => {
+                stop();
+                start();
+              };
+
+              thumbs.forEach((thumb) => {
+                thumb.addEventListener("click", () => {
+                  const nextIndex = Number(thumb.getAttribute("data-gallery-index"));
+
+                  if (Number.isNaN(nextIndex)) {
+                    return;
+                  }
+
+                  setActive(nextIndex);
+                  restart();
+                });
+              });
+
+              showcase.addEventListener("mouseenter", stop);
+              showcase.addEventListener("mouseleave", start);
+              showcase.addEventListener("focusin", stop);
+              showcase.addEventListener("focusout", start);
+              showcase.dataset.bound = "true";
+            });
+          };
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initShowcases, { once: true });
+          } else {
+            initShowcases();
+          }
+
+          document.addEventListener("astro:after-swap", initShowcases);
+        })();
+      </script>
+    )
+  }
 </SiteLayout>
 
 <style>
@@ -112,6 +260,25 @@ const medium = work.medium ?? work.materials;
     width: 100%;
     aspect-ratio: 16 / 10;
     object-fit: cover;
+    display: block;
+  }
+
+  .viewer {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background:
+      radial-gradient(circle at 18% 20%, rgba(224, 101, 47, 0.25), transparent 48%),
+      radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.08), transparent 46%),
+      linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(7, 11, 16, 0.85));
+  }
+
+  .viewer-hint {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    border-top: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .header {
@@ -185,6 +352,74 @@ const medium = work.medium ?? work.materials;
 
   .gallery h2 {
     font-size: clamp(1.6rem, 5vw, 2.4rem);
+  }
+
+  .gallery-showcase {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .gallery-stage {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-md);
+    overflow: clip;
+    border: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .gallery-slide {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    transition: opacity 680ms ease;
+  }
+
+  .gallery-slide[data-active="true"] {
+    opacity: 1;
+  }
+
+  .gallery-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .gallery-thumbs {
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(auto-fit, minmax(4.8rem, 1fr));
+  }
+
+  .gallery-thumb {
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: calc(var(--radius-md) * 0.7);
+    overflow: clip;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.75;
+    transition:
+      opacity 200ms ease,
+      border-color 200ms ease,
+      transform 200ms ease;
+  }
+
+  .gallery-thumb img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+  }
+
+  .gallery-thumb:hover,
+  .gallery-thumb[data-active="true"] {
+    opacity: 1;
+    border-color: rgba(224, 101, 47, 0.7);
+    transform: translateY(-2px);
   }
 
   .gallery-grid {

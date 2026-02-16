@@ -45,6 +45,8 @@ async function toWorkItem(entry: WorkEntry): Promise<WorkItem> {
     status: entry.data.status,
     coverImage: await resolveImage(entry.data.coverImage),
     galleryImages: await Promise.all((entry.data.galleryImages ?? []).map(resolveImage)),
+    storeImages: entry.data.storeImages ?? [],
+    model3dSrc: entry.data.model3dSrc,
     maker: entry.data.maker,
     aboutItem: entry.data.aboutItem,
     showFullDescriptionLabel: entry.data.showFullDescriptionLabel,

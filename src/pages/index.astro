@@ -44,6 +44,7 @@ function parsePeople(markdown: string): Person[] {
 const people = parsePeople(about.body);
 const hero = home.data.hero;
 const heroMedia = hero.mediaSrc && hero.mediaAlt ? { src: hero.mediaSrc, alt: hero.mediaAlt } : undefined;
+const dragonModelSrc = "/models/dragon.glb";
 ---
 
 <SiteLayout
@@ -53,6 +54,8 @@ const heroMedia = hero.mediaSrc && hero.mediaAlt ? { src: hero.mediaSrc, alt: he
   seoDescription={home.data.seoDescription}
   effectPreset="home"
 >
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
   <Hero
     eyebrow={home.data.eyebrow}
     title={hero.title}
@@ -64,6 +67,8 @@ const heroMedia = hero.mediaSrc && hero.mediaAlt ? { src: hero.mediaSrc, alt: he
         : undefined
     }
     media={heroMedia}
+    dragonModelSrc={dragonModelSrc}
+    dragonPosterSrc={heroMedia?.src}
   />
 
   <Section id="what-this-is" kicker="What This Is" title={home.data.title} lede={home.data.description}>

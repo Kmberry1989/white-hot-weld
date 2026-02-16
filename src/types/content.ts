@@ -24,6 +24,8 @@ export interface WorkItem {
   status?: WorkStatus;
   coverImage: ImageMetadata;
   galleryImages: ImageMetadata[];
+  storeImages: string[];
+  model3dSrc?: string;
   maker?: string;
   aboutItem?: string;
   showFullDescriptionLabel?: string;
