@@ -20,6 +20,7 @@ interface ModelViewerElement extends HTMLElement {
 }
 
 const MODEL_VIEWER_SRC = "https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js";
+const MOTORCYCLE_RIDE_SESSION_KEY = "whw-motorcycle-ride-played";
 
 let cleanupMotorcycleRide: (() => void) | null = null;
 
@@ -66,6 +67,25 @@ function ensureModelViewerLoaded(): void {
   document.head.append(script);
 }
 
+function hasMotorcycleRidePlayedThisSession(): boolean {
+  try {
+    return window.sessionStorage.getItem(MOTORCYCLE_RIDE_SESSION_KEY) === "true";
+  } catch {
+    const win = window as Window & { __whwMotorcycleRidePlayed?: boolean };
+    return Boolean(win.__whwMotorcycleRidePlayed);
+  }
+}
+
+function markMotorcycleRidePlayedThisSession(): void {
+  try {
+    window.sessionStorage.setItem(MOTORCYCLE_RIDE_SESSION_KEY, "true");
+  } catch {
+    // Fall through to runtime flag.
+  }
+  const win = window as Window & { __whwMotorcycleRidePlayed?: boolean };
+  win.__whwMotorcycleRidePlayed = true;
+}
+
 export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | string, disabledFlag = false): void {
   if (cleanupMotorcycleRide) {
     cleanupMotorcycleRide();
@@ -85,17 +105,21 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
     return;
   }
 
+  runner.dataset.active = "false";
+  track.style.opacity = "0";
+  track.dataset.motionBlur = "0";
+  track.style.setProperty("--motorcycle-motion-blur", "0px");
+
+  if (hasMotorcycleRidePlayedThisSession()) {
+    return;
+  }
+
   const smokeCtx = smokeCanvas.getContext("2d");
   if (!smokeCtx) {
     return;
   }
 
   ensureModelViewerLoaded();
-
-  runner.dataset.active = "false";
-  track.style.opacity = "0";
-  track.dataset.motionBlur = "0";
-  track.style.setProperty("--motorcycle-motion-blur", "0px");
 
   let rafId = 0;
   let width = Math.max(1, window.innerWidth);
@@ -104,7 +128,6 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
   const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
   let outboundProgress = 0;
-  let outboundTargetMax = 0;
   let returnStarted = false;
   let returnProgress = 0;
   let parked = false;
@@ -114,6 +137,7 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
   let wheeliePeakReached = false;
 
   const triggerDelayMs = 2000;
+  const outboundDurationSeconds = 5.8;
   const returnDurationSeconds = 2.5;
   const showcaseStartDelayMs = 1700;
   const showcaseSpinSpeedDegPerSecond = 11;
@@ -121,7 +145,6 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
   let triggerArmed = false;
   let triggerReady = false;
   let triggerReleaseAt = 0;
-  let triggerRevealSnapshot = 0;
   let parkedAtTime = 0;
 
   let animationReady = false;
@@ -325,17 +348,15 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
       if (!triggerArmed && reveal >= 0.07) {
         triggerArmed = true;
         triggerReleaseAt = now + triggerDelayMs;
-        triggerRevealSnapshot = Math.max(reveal, 0.22);
       }
 
       if (!triggerReady && triggerArmed && now >= triggerReleaseAt) {
         triggerReady = true;
-        outboundTargetMax = Math.max(outboundTargetMax, triggerRevealSnapshot);
+        markMotorcycleRidePlayedThisSession();
       }
 
       if (triggerReady) {
-        outboundTargetMax = Math.max(outboundTargetMax, reveal);
-        outboundProgress += (outboundTargetMax - outboundProgress) * 0.08;
+        outboundProgress += dtSeconds / outboundDurationSeconds;
         outboundProgress = clamp(outboundProgress, 0, 1);
       } else {
         outboundProgress = 0;
@@ -451,7 +472,6 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
     triggerArmed = false;
     triggerReady = false;
     triggerReleaseAt = 0;
-    triggerRevealSnapshot = 0;
     parkedAtTime = 0;
   };
 }

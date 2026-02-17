@@ -55,6 +55,7 @@ const dragonModelSrc = "/models/dragon.glb";
   effectPreset="home"
 >
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script type="module" src="/scripts/white-hot-frame.js"></script>
 
   <Hero
     eyebrow={home.data.eyebrow}
@@ -83,7 +84,13 @@ const dragonModelSrc = "/models/dragon.glb";
     ctaLabel="View item details"
   />
 
-  <PeopleIntro title={about.data.title} body={about.data.description} people={people} />
+  <PeopleIntro
+    title={about.data.title}
+    body={about.data.description}
+    people={people}
+    artistImageSrc="/images/library/editorial/sheryl_john.png"
+    artistImageAlt="Sheryl and John in front of welded artwork"
+  />
 
   <CallToAction
     title={contact.data.title}

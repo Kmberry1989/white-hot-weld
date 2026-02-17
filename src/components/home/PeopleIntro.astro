@@ -7,21 +7,35 @@ interface Props {
   title: string;
   body: string;
   people: Person[];
+  artistImageSrc?: string;
+  artistImageAlt?: string;
 }
 
-const { title, body, people } = Astro.props;
+const {
+  title,
+  body,
+  people,
+  artistImageSrc = "/images/library/editorial/sheryl_john.png",
+  artistImageAlt = "Sheryl and John with their metal artwork"
+} = Astro.props;
 ---
 
 <Section id="people" kicker="The People" title={title} lede={body} tone="muted">
-  <div class={styles.grid}>
-    {
-      people.map((person) => (
-        <article class={styles.card} data-reveal>
-          <h3>{person.name}</h3>
-          <p class={styles.role}>{person.role}</p>
-          <p>{person.bio}</p>
-        </article>
-      ))
-    }
+  <div class={styles.layout}>
+    <figure class={styles.artistMedia} data-reveal>
+      <white-hot-frame src={artistImageSrc} alt={artistImageAlt} class={styles.artistFrame}></white-hot-frame>
+    </figure>
+
+    <div class={styles.grid}>
+      {
+        people.map((person) => (
+          <article class={styles.card} data-reveal>
+            <h3>{person.name}</h3>
+            <p class={styles.role}>{person.role}</p>
+            <p>{person.bio}</p>
+          </article>
+        ))
+      }
+    </div>
   </div>
 </Section>
