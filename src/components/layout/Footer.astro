@@ -15,7 +15,13 @@ const { tagline, navItems, socialLinks } = Astro.props;
 <footer class={styles.footer}>
   <PageContainer size="wide" className={styles.container}>
     <div class={styles.brandBlock}>
-      <p class={styles.brand}>White Hot Weld</p>
+      <img
+        src="/images/branding/marriedmetal.png"
+        alt="Married Metal Art logo with the line Began with a spark"
+        class={styles.brand}
+        loading="lazy"
+        decoding="async"
+      />
       <p class={styles.tagline}>{tagline}</p>
     </div>
 

@@ -179,8 +179,9 @@
 .media {
   width: 100%;
   aspect-ratio: 16 / 10;
-  object-fit: cover;
+  object-fit: contain;
   opacity: 0.95;
+  background: #020406;
 }
 
 @keyframes dragon-fade-main {

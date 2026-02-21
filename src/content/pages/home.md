@@ -9,8 +9,8 @@ hero:
   primaryCtaHref: /gallery
   secondaryCtaLabel: Commission a Piece
   secondaryCtaHref: /contact
-  mediaSrc: /images/placeholders/hero-forge.svg
-  mediaAlt: Steel and ember gradients with lines suggesting a welded form
+  mediaSrc: /images/branding/whitehotweld.png
+  mediaAlt: White Hot Weld logo in metallic letters over orange sparks
 seoTitle: White Hot Weld | Married Metal Art
 seoDescription: White Hot Weld is the studio practice of Sheryl and John, creating deliberate welded art for spaces that want heat, craft, and permanence.
 ---

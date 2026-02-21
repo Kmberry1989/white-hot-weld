@@ -11,8 +11,10 @@
 }
 
 .brand {
-  font-family: var(--font-heading);
-  font-size: 1.35rem;
+  width: min(100%, 28rem);
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 0 16px rgba(103, 178, 255, 0.25));
 }
 
 .tagline {
