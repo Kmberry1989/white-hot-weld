@@ -4,7 +4,9 @@
 }
 
 .artistMedia {
+  width: min(50%, 22rem);
   margin: 0;
+  margin-inline: auto;
   padding: clamp(0.45rem, 1vw, 0.8rem);
   border-radius: var(--radius-md);
   border: 1px solid rgba(224, 101, 47, 0.4);

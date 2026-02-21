@@ -25,16 +25,9 @@ const isActive = (href: string): boolean => {
 
 <div class={styles.wrap}>
   <PageContainer size="wide" className={styles.container}>
-    <a href="/" class={styles.brand} data-reveal aria-label="White Hot Weld home">
-      <img
-        src="/images/branding/penrod.png"
-        alt=""
-        class={styles.brandMark}
-        loading="eager"
-        fetchpriority="high"
-        decoding="async"
-      />
-      <span class={styles.brandSr}>White Hot Weld</span>
+    <a href="/" class={styles.brand} data-reveal>
+      <span class={styles.brandTop}>White Hot Weld</span>
+      <span class={styles.brandBottom}>Married Metal Art</span>
     </a>
 
     <nav aria-label="Primary">

@@ -17,28 +17,22 @@
 
 .brand {
   display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  position: relative;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
-.brandMark {
-  width: clamp(8.75rem, 19vw, 13rem);
-  height: auto;
-  display: block;
-  filter: drop-shadow(0 0 18px rgba(103, 178, 255, 0.3));
+.brandTop {
+  font-family: var(--font-heading);
+  font-size: clamp(1.15rem, 2.8vw, 1.4rem);
+  font-weight: 600;
+  line-height: 1;
 }
 
-.brandSr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
+.brandBottom {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .navList {
@@ -70,9 +64,5 @@
   .container {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .brandMark {
-    width: clamp(7rem, 40vw, 10rem);
   }
 }

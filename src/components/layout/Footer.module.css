@@ -8,6 +8,14 @@
 .container {
   display: grid;
   gap: var(--space-5);
+  justify-items: center;
+  text-align: center;
+}
+
+.brandBlock {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
 }
 
 .brand {
@@ -15,6 +23,13 @@
   height: auto;
   display: block;
   filter: drop-shadow(0 0 16px rgba(103, 178, 255, 0.25));
+}
+
+.signature {
+  width: min(100%, 14rem);
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 0 14px rgba(103, 178, 255, 0.24));
 }
 
 .tagline {
@@ -30,6 +45,7 @@
   margin: 0;
   padding: 0;
   gap: var(--space-3);
+  justify-content: center;
 }
 
 .nav a,
