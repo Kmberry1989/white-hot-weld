@@ -5,4 +5,4 @@ eyebrow: The Invitation
 seoTitle: Contact | White Hot Weld
 seoDescription: Start a White Hot Weld commission inquiry with practical details on size, materials, and timeline.
 ---
-Commission requests are reviewed personally. Share the basics and we will follow up with scope, lead time, and fit.
+Commission requests and piece-specific inquiries are reviewed personally. Share the basics and we will follow up with scope, lead time, fit, and next steps.

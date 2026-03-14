@@ -44,6 +44,7 @@ export interface WorkSummary {
   medium?: string;
   dimensions: string;
   price?: string;
+  status?: "available" | "sold" | "commissioned";
   coverImage: ImageMetadata;
   storeImages?: string[];
   model3dSrc?: string;

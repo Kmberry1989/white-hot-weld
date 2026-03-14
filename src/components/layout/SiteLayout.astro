@@ -2,7 +2,8 @@
 import { ClientRouter } from "astro:transitions";
 import ForgeShaderBackground from "../effects/ForgeShaderBackground.astro";
 import type { EffectPreset } from "../../types/effects";
-import type { NavItem, SocialLink } from "../../types/ui";
+import type { NavItem } from "../../types/ui";
+import { absoluteUrl, getSocialLinks, siteConfig } from "../../lib/site";
 import "../../styles/global.css";
 import Footer from "./Footer.astro";
 import Header from "./Header.astro";
@@ -32,14 +33,14 @@ const navItems: NavItem[] = [
   { href: "/contact", label: "Contact" }
 ];
 
-const socialLinks: SocialLink[] = [
-  { href: "#", label: "Instagram" },
-  { href: "#", label: "Email" }
-];
+const socialLinks = getSocialLinks();
 
-const pageTitle = seoTitle ?? (title ? `${title} | White Hot Weld` : "White Hot Weld");
-const pageDescription =
-  seoDescription ?? description ?? "Married metal art shaped with warmth, intention, and precision.";
+const pageTitle = seoTitle ?? (title ? `${title} | ${siteConfig.name}` : siteConfig.title);
+const pageDescription = seoDescription ?? description ?? siteConfig.description;
+const canonicalUrl = absoluteUrl(Astro.url.pathname);
+const socialImageUrl = absoluteUrl(siteConfig.defaultOgImage);
+const canonicalHref = canonicalUrl ?? Astro.url.pathname;
+const socialImage = socialImageUrl ?? siteConfig.defaultOgImage;
 const showMotorcycleRide = effectPreset === "home";
 ---
 
@@ -49,6 +50,16 @@ const showMotorcycleRide = effectPreset === "home";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonicalHref} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonicalHref} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={socialImage} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <ClientRouter />
     <title>{pageTitle}</title>

@@ -46,6 +46,7 @@ const work = defineCollection({
     showFullDescriptionLabel: z.string().optional(),
     shippingPolicyTitle: z.string().optional(),
     shippingEstimate: z.string().optional(),
+    shippingWindow: z.string().optional(),
     shippingCost: z.string().optional(),
     shipsFrom: z.string().optional(),
     status: z.enum(["available", "sold", "commissioned"]).optional()

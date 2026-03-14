@@ -16,13 +16,6 @@ const { tagline, navItems, socialLinks } = Astro.props;
   <PageContainer size="wide" className={styles.container}>
     <div class={styles.brandBlock}>
       <img
-        src="/images/branding/marriedmetal.png"
-        alt="Married Metal Art logo with the line Began with a spark"
-        class={styles.brand}
-        loading="lazy"
-        decoding="async"
-      />
-      <img
         src="/images/branding/penrod.png"
         alt="Penrod signature mark"
         class={styles.signature}
@@ -42,14 +35,18 @@ const { tagline, navItems, socialLinks } = Astro.props;
       }
     </ul>
 
-    <ul class={styles.social}>
-      {
-        socialLinks.map((item) => (
-          <li>
-            <a href={item.href}>{item.label}</a>
-          </li>
-        ))
-      }
-    </ul>
+    {
+      socialLinks.length > 0 && (
+        <ul class={styles.social}>
+          {
+            socialLinks.map((item) => (
+              <li>
+                <a href={item.href}>{item.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+      )
+    }
   </PageContainer>
 </footer>

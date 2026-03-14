@@ -1,9 +1,13 @@
 ---
 import SiteLayout from "../components/layout/SiteLayout.astro";
 import Section from "../components/ui/Section.astro";
-import { getPageContent } from "../lib/content";
+import { getAllWork, getPageContent } from "../lib/content";
+import { getSocialLinks, siteConfig } from "../lib/site";
 
 const page = await getPageContent("contact");
+const work = await getAllWork();
+const socialLinks = getSocialLinks();
+const inquiryTargets = work.map((item) => ({ slug: item.slug, title: item.title }));
 const { Content } = await page.render();
 ---
 
@@ -19,12 +23,44 @@ const { Content } = await page.render();
       <Content />
     </div>
 
+    <div class="contact-meta" data-reveal>
+      <div class="contact-card">
+        <h2>Start with the essentials</h2>
+        <p>{siteConfig.contact.serviceArea}</p>
+        {siteConfig.contact.location && <p><strong>Studio base:</strong> {siteConfig.contact.location}</p>}
+      </div>
+
+      <div class="contact-card">
+        <h2>What happens next</h2>
+        {siteConfig.contact.responseTime && <p>{siteConfig.contact.responseTime}</p>}
+        {siteConfig.contact.commissionLeadTime && <p>{siteConfig.contact.commissionLeadTime}</p>}
+      </div>
+
+      {
+        socialLinks.length > 0 && (
+          <div class="contact-card">
+            <h2>Direct contact</h2>
+            <ul class="contact-links">
+              {
+                socialLinks.map((link) => (
+                  <li>
+                    <a href={link.href}>{link.label}</a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        )
+      }
+    </div>
+
     <p id="contact-success" class="notice success" hidden>
       Thanks. Your inquiry was submitted and we will follow up with next steps.
     </p>
     <p id="contact-error" class="notice error" hidden>
       Something interrupted submission. Please try again in a moment.
     </p>
+    <p id="contact-context" class="notice context" hidden></p>
 
     <form
       name="commission"
@@ -36,6 +72,7 @@ const { Content } = await page.render();
       data-commission-form
     >
       <input type="hidden" name="form-name" value="commission" />
+      <input type="hidden" name="item" value="" data-item-field />
       <p class="sr-only">
         <label>
           Do not fill this out if you are human:
@@ -114,7 +151,7 @@ const { Content } = await page.render();
 
         <label class="full">
           Project notes
-          <textarea name="message" rows="6" required></textarea>
+          <textarea name="message" rows="6" required data-message-field></textarea>
         </label>
       </div>
 
@@ -123,14 +160,36 @@ const { Content } = await page.render();
   </Section>
 </SiteLayout>
 
+<script is:inline type="application/json" id="contact-work-lookup" set:html={JSON.stringify(inquiryTargets)}></script>
+
 <script is:inline>
+  const workLookupData = JSON.parse(document.getElementById("contact-work-lookup")?.textContent ?? "[]");
+  const workLookup = new Map(workLookupData.map((item) => [item.slug, item]));
   const params = new URLSearchParams(window.location.search);
   const submitted = params.get("submitted") === "true";
   const errored = params.get("error") === "true";
+  const selectedItemSlug = params.get("item");
 
   const form = document.querySelector("[data-commission-form]");
   const successNotice = document.getElementById("contact-success");
   const errorNotice = document.getElementById("contact-error");
+  const contextNotice = document.getElementById("contact-context");
+  const itemField = document.querySelector("[data-item-field]");
+  const messageField = document.querySelector("[data-message-field]");
+
+  if (selectedItemSlug && contextNotice && itemField instanceof HTMLInputElement) {
+    const selectedItem = workLookup.get(selectedItemSlug);
+
+    if (selectedItem) {
+      contextNotice.hidden = false;
+      contextNotice.textContent = `Regarding: ${selectedItem.title}`;
+      itemField.value = selectedItem.slug;
+
+      if (messageField instanceof HTMLTextAreaElement && messageField.value.trim() === "") {
+        messageField.value = `I’m interested in ${selectedItem.title}.`;
+      }
+    }
+  }
 
   if (submitted && form && successNotice) {
     successNotice.hidden = false;
@@ -165,14 +224,28 @@ const { Content } = await page.render();
         });
 
         if (response.ok) {
-          window.location.assign("/contact?submitted=true");
+          const redirectUrl = new URL("/contact", window.location.origin);
+          redirectUrl.searchParams.set("submitted", "true");
+
+          if (itemField instanceof HTMLInputElement && itemField.value) {
+            redirectUrl.searchParams.set("item", itemField.value);
+          }
+
+          window.location.assign(redirectUrl.toString());
           return;
         }
       } catch {
         // Navigation below handles the user-visible error state.
       }
 
-      window.location.assign("/contact?error=true");
+      const redirectUrl = new URL("/contact", window.location.origin);
+      redirectUrl.searchParams.set("error", "true");
+
+      if (itemField instanceof HTMLInputElement && itemField.value) {
+        redirectUrl.searchParams.set("item", itemField.value);
+      }
+
+      window.location.assign(redirectUrl.toString());
     });
   }
 </script>
@@ -191,12 +264,56 @@ const { Content } = await page.render();
     border: 1px solid var(--color-border);
   }
 
+  .contact-meta {
+    display: grid;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+
+  .contact-card {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.03);
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .contact-card h2 {
+    margin: 0;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+  }
+
+  .contact-card p {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .contact-links a {
+    color: var(--color-accent-soft);
+    font-weight: 600;
+  }
+
   .success {
     background: rgba(79, 143, 180, 0.15);
   }
 
   .error {
     background: rgba(224, 101, 47, 0.15);
+  }
+
+  .context {
+    background: rgba(224, 101, 47, 0.1);
+    color: var(--color-text);
   }
 
   .form {
@@ -248,6 +365,10 @@ const { Content } = await page.render();
   }
 
   @media (min-width: 52rem) {
+    .contact-meta {
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    }
+
     .fields {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

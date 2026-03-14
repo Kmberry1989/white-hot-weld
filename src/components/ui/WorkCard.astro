@@ -19,6 +19,14 @@ const hasModelPreview = showModelPreview && Boolean(item.model3dSrc);
 const surroundSlots = ["tl", "t", "tr", "l", "r", "bl", "b", "br"] as const;
 const surroundingImages =
   storeImages.length > 0 ? surroundSlots.map((_, index) => storeImages[index % storeImages.length]) : [];
+const statusLabel =
+  item.status === "sold"
+    ? "Sold"
+    : item.status === "commissioned"
+      ? "Commissioned"
+      : item.status === "available"
+        ? "Available"
+        : undefined;
 ---
 
 <article
@@ -90,9 +98,11 @@ const surroundingImages =
     }
     <div class={styles.body}>
       <h3>{item.title}</h3>
+      {statusLabel && <p class={`${styles.status} ${styles[`status${statusLabel}`]}`}>{statusLabel}</p>}
       {item.price && <p class={styles.price}>{item.price}</p>}
       <p class={styles.meta}>{item.medium ?? item.materials}</p>
       <p class={styles.excerpt}>{item.excerpt}</p>
+      <p class={styles.linkPrompt}>{item.status === "available" ? "View details and inquire" : "View details"}</p>
     </div>
   </a>
 </article>

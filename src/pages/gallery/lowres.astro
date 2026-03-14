@@ -1,0 +1,125 @@
+---
+import { readdir } from "node:fs/promises";
+import path from "node:path";
+import SiteLayout from "../../components/layout/SiteLayout.astro";
+import Section from "../../components/ui/Section.astro";
+
+const lowresDir = path.join(process.cwd(), "public/images/library/archive/lowres");
+const imageExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
+
+const lowresImages = (await readdir(lowresDir, { withFileTypes: true }))
+  .filter((entry) => entry.isFile() && imageExtensions.has(path.extname(entry.name).toLowerCase()))
+  .map((entry) => entry.name)
+  .sort((a, b) => b.localeCompare(a))
+  .map((fileName, index) => ({
+    src: `/images/library/archive/lowres/${fileName}`,
+    alt: `White Hot Weld archive image ${index + 1}`
+  }));
+
+const imageCount = lowresImages.length;
+const lede =
+  imageCount > 0
+    ? `A dedicated image gallery built from the lowres archive folder. Currently showing ${imageCount} images.`
+    : "A dedicated image gallery built from the lowres archive folder.";
+---
+
+<SiteLayout
+  title="Image Gallery"
+  description={lede}
+  seoTitle="Image Gallery | White Hot Weld"
+  seoDescription={lede}
+  effectPreset="gallery"
+>
+  <Section id="lowres-gallery" kicker="Archive Gallery" title="Image Gallery" lede={lede}>
+    <div class="actions" data-reveal>
+      <a class="secondary" href="/gallery">Back to shop</a>
+      <a class="secondary" href="/contact">Commission custom work</a>
+    </div>
+
+    {
+      lowresImages.length > 0 ? (
+        <div class="grid" data-reveal>
+          {
+            lowresImages.map((image) => (
+              <a class="tile" href={image.src} target="_blank" rel="noreferrer">
+                <img src={image.src} alt={image.alt} loading="lazy" />
+              </a>
+            ))
+          }
+        </div>
+      ) : (
+        <p class="empty" data-reveal>No lowres archive images were found.</p>
+      )
+    }
+  </Section>
+</SiteLayout>
+
+<style>
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.72rem 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tile {
+    display: block;
+    border-radius: var(--radius-md);
+    overflow: clip;
+    border: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.22);
+    transition:
+      transform 220ms ease,
+      border-color 220ms ease,
+      box-shadow 220ms ease;
+  }
+
+  .tile:hover {
+    transform: translateY(-2px);
+    border-color: rgba(224, 101, 47, 0.52);
+    box-shadow: 0 24px 40px rgba(0, 0, 0, 0.28);
+  }
+
+  .tile img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .empty {
+    margin-top: var(--space-5);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 52rem) {
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 78rem) {
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

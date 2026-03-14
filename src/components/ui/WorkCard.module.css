@@ -256,6 +256,30 @@
   font-weight: 600;
 }
 
+.status {
+  justify-self: start;
+  margin: 0;
+  padding: 0.24rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.statusAvailable {
+  color: #ffd9c7;
+  background: rgba(224, 101, 47, 0.18);
+  border: 1px solid rgba(224, 101, 47, 0.36);
+}
+
+.statusSold,
+.statusCommissioned {
+  color: rgba(222, 232, 242, 0.88);
+  background: rgba(120, 140, 158, 0.14);
+  border: 1px solid rgba(120, 140, 158, 0.28);
+}
+
 .meta {
   color: var(--color-contrast);
   font-size: 0.85rem;
@@ -265,4 +289,11 @@
 
 .excerpt {
   color: var(--color-text-muted);
+}
+
+.linkPrompt {
+  margin-top: var(--space-1);
+  color: var(--color-accent-soft);
+  font-size: 0.92rem;
+  font-weight: 600;
 }

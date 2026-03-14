@@ -23,8 +23,8 @@ storeImages:
 model3dSrc: /images/library/store/dragon catcher/dragon catcher.glb
 status: available
 maker: John
-aboutItem: The "Dragonfly Catcher" is a handmade piece of art that will bring a bit of whimsy to any room in your home or office. This piece was made by John.
-shippingEstimate: Order today to get by Feb 19-20
+aboutItem: The "Dragon Catcher" is a handmade metal piece designed to bring a bit of whimsy to a room while still feeling grounded and durable. This piece was made by John.
+shippingWindow: Usually ships within 5-7 business days.
 shippingCost: "$11.55"
 shipsFrom: Kokomo, IN
 shippingPolicyTitle: Shipping and return policies

@@ -52,6 +52,7 @@ async function toWorkItem(entry: WorkEntry): Promise<WorkItem> {
     showFullDescriptionLabel: entry.data.showFullDescriptionLabel,
     shippingPolicyTitle: entry.data.shippingPolicyTitle,
     shippingEstimate: entry.data.shippingEstimate,
+    shippingWindow: entry.data.shippingWindow,
     shippingCost: entry.data.shippingCost,
     shipsFrom: entry.data.shipsFrom
   };

@@ -22,6 +22,10 @@ const storeImages = work.storeImages ?? [];
 const hasStoreGallery = storeImages.length > 0;
 const galleryIntervalMs = 4200;
 const aboutText = work.aboutItem ?? work.excerpt;
+const statusLabel =
+  work.status === "sold" ? "Sold" : work.status === "commissioned" ? "Commissioned" : work.status === "available" ? "Available" : undefined;
+const inquiryHref = `/contact?item=${encodeURIComponent(work.slug)}`;
+const shippingCopy = work.shippingWindow ?? work.shippingEstimate;
 const makerMentionedInAbout = (() => {
   if (!work.maker) {
     return false;
@@ -70,8 +74,15 @@ const makerMentionedInAbout = (() => {
 
     <header class="header" data-reveal>
       <h1>{work.title}</h1>
+      {statusLabel && <p class={`status ${work.status === "available" ? "status-available" : "status-inactive"}`}>{statusLabel}</p>}
       {work.price && <p class="price">{work.price}</p>}
       <p class="excerpt">{work.excerpt}</p>
+      <div class="actions">
+        <a class="primary" href={inquiryHref}>
+          {work.status === "available" ? "Inquire about this piece" : "Ask about a similar commission"}
+        </a>
+        <a class="secondary" href="/gallery">Browse available work</a>
+      </div>
     </header>
 
     <section class="detail-block" data-reveal>
@@ -101,7 +112,7 @@ const makerMentionedInAbout = (() => {
 
     <section class="detail-block" data-reveal>
       <h2>{work.shippingPolicyTitle ?? "Shipping and return policies"}</h2>
-      {work.shippingEstimate && <p>{work.shippingEstimate}</p>}
+      {shippingCopy && <p>{shippingCopy}</p>}
       {work.shippingCost && <p>Cost to ship: {work.shippingCost}</p>}
       {work.shipsFrom && <p>Ships from: {work.shipsFrom}</p>}
     </section>
@@ -308,9 +319,59 @@ const makerMentionedInAbout = (() => {
     margin-top: 0.2rem;
   }
 
+  .status {
+    justify-self: start;
+    margin: 0;
+    padding: 0.28rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .status-available {
+    color: #ffd9c7;
+    background: rgba(224, 101, 47, 0.18);
+    border: 1px solid rgba(224, 101, 47, 0.34);
+  }
+
+  .status-inactive {
+    color: rgba(228, 235, 241, 0.88);
+    background: rgba(120, 140, 158, 0.14);
+    border: 1px solid rgba(120, 140, 158, 0.28);
+  }
+
   .excerpt {
     color: var(--color-text-muted);
     max-width: 56ch;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  .primary,
+  .secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.72rem 1rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+  }
+
+  .primary {
+    background: var(--color-accent);
+    color: #111317;
+  }
+
+  .secondary {
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
   }
 
   .detail-block {

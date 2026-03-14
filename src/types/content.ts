@@ -31,6 +31,7 @@ export interface WorkItem {
   showFullDescriptionLabel?: string;
   shippingPolicyTitle?: string;
   shippingEstimate?: string;
+  shippingWindow?: string;
   shippingCost?: string;
   shipsFrom?: string;
 }
