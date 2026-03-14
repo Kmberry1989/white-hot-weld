@@ -29,14 +29,14 @@
     linear-gradient(165deg, rgba(5, 8, 13, 0.06), rgba(5, 8, 13, 0.72) 68%, rgba(5, 8, 13, 0.9));
 }
 
-.dragonStage {
-  --dragon-scale: 1;
-  --dragon-dynamic-blur: 2.8px;
-  --dragon-obscure-opacity: 1;
+.modelStage {
+  --hero-model-scale: 1;
+  --hero-model-dynamic-blur: 2.8px;
+  --hero-model-obscure-opacity: 1;
   position: absolute;
   inset: 10% 36% -2% -11%;
-  opacity: var(--dragon-obscure-opacity);
-  transform: scale(var(--dragon-scale));
+  opacity: var(--hero-model-obscure-opacity);
+  transform: scale(var(--hero-model-scale));
   transform-origin: 38% 58%;
   transition:
     transform 260ms ease,
@@ -46,34 +46,37 @@
     drop-shadow(0 0 34px rgba(224, 101, 47, 0.28));
 }
 
-.dragonModel {
+.modelGroup {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+  filter:
+    drop-shadow(0 28px 48px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 28px rgba(255, 133, 69, 0.2));
+}
+
+.dragonGroup {
+  animation: hero-group-dragon 10s linear infinite;
+}
+
+.roseGroup {
+  animation: hero-group-rose 10s linear infinite;
+}
+
+.modelViewer {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   transform-origin: center;
   mix-blend-mode: screen;
-  opacity: 0;
   pointer-events: none;
-  filter: blur(var(--dragon-dynamic-blur));
-  transition:
-    opacity 380ms ease,
-    filter 320ms ease;
-  will-change: filter, opacity;
-}
-
-.dragonMain {
-  animation:
-    dragon-fade-main 14s ease-in-out infinite,
-    dragon-drift-main 28s ease-in-out infinite;
-}
-
-.dragonGhost {
-  filter: blur(calc(1.4px + var(--dragon-dynamic-blur))) saturate(1.28);
-  animation:
-    dragon-fade-ghost 14s ease-in-out infinite,
-    dragon-drift-ghost 32s ease-in-out infinite;
-  transform: scale(1.04) translateX(2%);
+  filter: blur(var(--hero-model-dynamic-blur));
+  transition: filter 320ms ease;
+  will-change: filter, transform;
+  animation: hero-model-drift 26s ease-in-out infinite;
 }
 
 .sparkField {
@@ -184,37 +187,27 @@
   background: #020406;
 }
 
-@keyframes dragon-fade-main {
-  0%,
-  24% {
-    opacity: 0.14;
+@keyframes hero-group-dragon {
+  0% {
+    opacity: 1;
   }
 
-  46% {
-    opacity: 0.55;
-  }
-
-  70% {
-    opacity: 0.2;
-  }
-
-  100% {
-    opacity: 0.14;
-  }
-}
-
-@keyframes dragon-fade-ghost {
-  0%,
-  18% {
+  50% {
     opacity: 0;
   }
 
-  42% {
-    opacity: 0.36;
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-group-rose {
+  0% {
+    opacity: 0;
   }
 
-  68% {
-    opacity: 0.08;
+  50% {
+    opacity: 1;
   }
 
   100% {
@@ -222,7 +215,7 @@
   }
 }
 
-@keyframes dragon-drift-main {
+@keyframes hero-model-drift {
   0% {
     transform: translate3d(1.2%, 0.9%, 0) scale(1);
   }
@@ -233,20 +226,6 @@
 
   100% {
     transform: translate3d(1.2%, 0.9%, 0) scale(1);
-  }
-}
-
-@keyframes dragon-drift-ghost {
-  0% {
-    transform: scale(1.04) translate3d(2%, 1.2%, 0);
-  }
-
-  50% {
-    transform: scale(1.07) translate3d(-1.1%, -0.9%, 0);
-  }
-
-  100% {
-    transform: scale(1.04) translate3d(2%, 1.2%, 0);
   }
 }
 
@@ -290,7 +269,7 @@
 }
 
 @media (max-width: 61.99rem) {
-  .dragonStage {
+  .modelStage {
     inset: 18% 8% 10% -31%;
     transform-origin: 40% 56%;
   }
@@ -301,18 +280,22 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dragonMain,
-  .dragonGhost,
+  .dragonGroup,
+  .roseGroup,
+  .modelViewer,
   .spark,
   .flashWash {
     animation: none;
   }
 
-  .dragonMain {
-    opacity: 0.28;
+  .dragonGroup {
+    opacity: 1;
   }
 
-  .dragonGhost,
+  .roseGroup {
+    opacity: 0;
+  }
+
   .spark {
     opacity: 0;
   }

@@ -45,6 +45,7 @@ const people = parsePeople(about.body);
 const hero = home.data.hero;
 const heroMedia = hero.mediaSrc && hero.mediaAlt ? { src: hero.mediaSrc, alt: hero.mediaAlt } : undefined;
 const dragonModelSrc = "/models/dragon.glb";
+const roseModelSrc = "/models/rose.glb";
 ---
 
 <SiteLayout
@@ -69,6 +70,7 @@ const dragonModelSrc = "/models/dragon.glb";
     }
     media={heroMedia}
     dragonModelSrc={dragonModelSrc}
+    roseModelSrc={roseModelSrc}
     dragonPosterSrc={heroMedia?.src}
   />
 

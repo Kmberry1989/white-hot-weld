@@ -11,6 +11,7 @@ interface Props {
   secondaryCta?: CtaLink;
   media?: HeroMedia;
   dragonModelSrc?: string;
+  roseModelSrc?: string;
   dragonPosterSrc?: string;
 }
 
@@ -22,6 +23,7 @@ const {
   secondaryCta,
   media,
   dragonModelSrc = "/models/dragon.glb",
+  roseModelSrc = "/models/rose.glb",
   dragonPosterSrc
 } = Astro.props;
 
@@ -39,40 +41,42 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
 });
 ---
 
-<section class={styles.hero} data-dragon-hero>
+<section class={styles.hero} data-hero>
   <div class={styles.backgroundFx} aria-hidden="true">
     <div class={styles.shadowVignette}></div>
-    <div class={styles.dragonStage} data-dragon-stage>
-      <model-viewer
-        src={dragonModelSrc}
-        poster={dragonPosterSrc}
-        class={`${styles.dragonModel} ${styles.dragonMain}`}
-        data-dragon-model
-        autoplay
-        animation-speed="0.74"
-        interaction-prompt="none"
-        disable-zoom
-        disable-pan
-        auto-rotate
-        auto-rotate-delay="0"
-        shadow-intensity="1.15"
-        exposure="1.15"
-      />
-      <model-viewer
-        src={dragonModelSrc}
-        poster={dragonPosterSrc}
-        class={`${styles.dragonModel} ${styles.dragonGhost}`}
-        data-dragon-model
-        autoplay
-        animation-speed="0.7"
-        interaction-prompt="none"
-        disable-zoom
-        disable-pan
-        auto-rotate
-        auto-rotate-delay="0"
-        shadow-intensity="0.9"
-        exposure="1.2"
-      />
+    <div class={styles.modelStage} data-hero-stage>
+      <div class={`${styles.modelGroup} ${styles.dragonGroup}`} data-hero-group="dragon">
+        <model-viewer
+          src={dragonModelSrc}
+          poster={dragonPosterSrc}
+          class={styles.modelViewer}
+          data-hero-model
+          data-hero-group="dragon"
+          autoplay
+          animation-speed="0.74"
+          interaction-prompt="none"
+          disable-zoom
+          disable-pan
+          shadow-intensity="1.15"
+          exposure="1.15"
+        />
+      </div>
+      <div class={`${styles.modelGroup} ${styles.roseGroup}`} data-hero-group="rose">
+        <model-viewer
+          src={roseModelSrc}
+          poster={dragonPosterSrc}
+          class={styles.modelViewer}
+          data-hero-model
+          data-hero-group="rose"
+          autoplay
+          animation-speed="0.74"
+          interaction-prompt="none"
+          disable-zoom
+          disable-pan
+          shadow-intensity="1.15"
+          exposure="1.15"
+        />
+      </div>
     </div>
     <div class={styles.sparkField}>
       {
@@ -112,19 +116,20 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
 
 <script>
   (() => {
-    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+    const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 
-    const initDragonHero = () => {
-      document.querySelectorAll("[data-dragon-hero]").forEach((hero) => {
-        if (!(hero instanceof HTMLElement) || hero.dataset.dragonBound === "true") {
+    const initHero = () => {
+      document.querySelectorAll("[data-hero]").forEach((heroNode) => {
+        if (!(heroNode instanceof HTMLElement) || heroNode.dataset.heroBound === "true") {
           return;
         }
 
-        const stage = hero.querySelector("[data-dragon-stage]");
-        const models = Array.from(hero.querySelectorAll("model-viewer[data-dragon-model]"));
+        const hero = heroNode;
+        const stage = hero.querySelector<HTMLElement>("[data-hero-stage]");
+        const models = Array.from(hero.querySelectorAll<HTMLElement>("model-viewer[data-hero-model]"));
 
         if (!(stage instanceof HTMLElement) || models.length === 0) {
-          hero.dataset.dragonBound = "true";
+          hero.dataset.heroBound = "true";
           return;
         }
 
@@ -143,64 +148,13 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
         let active = false;
         let rafId = 0;
 
-        const setTargetFromPointer = (event) => {
-          if (!(event instanceof PointerEvent)) {
-            return;
-          }
-
+        const updateFromLayout = (): number => {
           const rect = hero.getBoundingClientRect();
-          if (rect.width < 1 || rect.height < 1) {
-            return;
-          }
-
-          const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-          const ny = ((event.clientY - rect.top) / rect.height) * 2 - 1;
-
-          state.mx = clamp(nx, -1, 1);
-          state.my = clamp(ny, -1, 1);
-          active = true;
+          return clamp(Math.max(0, -rect.top) / Math.max(rect.height * 0.9, 1), 0, 1);
         };
 
-        const deactivate = () => {
-          active = false;
-        };
-
-        const onWindowBlur = () => {
-          deactivate();
-        };
-
-        const onVisibility = () => {
-          if (document.hidden) {
-            deactivate();
-          }
-        };
-
-        const onPointerDown = (event) => {
-          setTargetFromPointer(event);
-        };
-
-        const onPointerMove = (event) => {
-          setTargetFromPointer(event);
-        };
-
-        const onPointerUp = () => {
-          deactivate();
-        };
-
-        const onPointerLeave = () => {
-          deactivate();
-        };
-
-        const tick = () => {
-          if (!document.body.contains(hero)) {
-            cleanup();
-            return;
-          }
-
-          rafId = window.requestAnimationFrame(tick);
-
-          const rect = hero.getBoundingClientRect();
-          const scrollProgress = clamp(Math.max(0, -rect.top) / Math.max(rect.height * 0.9, 1), 0, 1);
+        const applyScene = (): boolean => {
+          const scrollProgress = updateFromLayout();
 
           state.tx += (state.mx - state.tx) * 0.16;
           state.ty += (state.my - state.ty) * 0.16;
@@ -215,27 +169,103 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
           state.radius += (targetRadius - state.radius) * 0.065;
           state.blur += (targetBlur - state.blur) * 0.075;
 
-          stage.style.setProperty("--dragon-scale", state.zoom.toFixed(3));
-          stage.style.setProperty("--dragon-dynamic-blur", `${state.blur.toFixed(2)}px`);
-          stage.style.setProperty("--dragon-obscure-opacity", `${(1 - scrollProgress * 0.5).toFixed(3)}`);
+          stage.style.setProperty("--hero-model-scale", state.zoom.toFixed(3));
+          stage.style.setProperty("--hero-model-dynamic-blur", `${state.blur.toFixed(2)}px`);
+          stage.style.setProperty("--hero-model-obscure-opacity", `${(1 - scrollProgress * 0.5).toFixed(3)}`);
 
           const thetaBase = -14 + state.x * 19;
           const phiBase = 76 + state.y * -8;
           const phi = clamp(phiBase, 58, 86);
           const radius = `${state.radius.toFixed(1)}%`;
 
-          models.forEach((model, index) => {
-            if (!(model instanceof HTMLElement)) {
-              return;
-            }
-
-            const theta = thetaBase + (index === 0 ? 0 : 7);
-            const ghostPhi = clamp(phi - (index === 0 ? 0 : 1.8), 58, 86);
-            model.setAttribute("camera-orbit", `${theta.toFixed(2)}deg ${ghostPhi.toFixed(2)}deg ${radius}`);
+          models.forEach((model) => {
+            model.setAttribute("camera-orbit", `${thetaBase.toFixed(2)}deg ${phi.toFixed(2)}deg ${radius}`);
           });
+
+          const settled =
+            Math.abs(state.mx - state.tx) < 0.001 &&
+            Math.abs(state.my - state.ty) < 0.001 &&
+            Math.abs(state.tx - state.x) < 0.001 &&
+            Math.abs(state.ty - state.y) < 0.001 &&
+            Math.abs(targetZoom - state.zoom) < 0.001 &&
+            Math.abs(targetRadius - state.radius) < 0.02 &&
+            Math.abs(targetBlur - state.blur) < 0.02;
+
+          return !settled;
         };
 
-        const cleanup = () => {
+        const queueTick = (): void => {
+          if (rafId !== 0) {
+            return;
+          }
+
+          rafId = window.requestAnimationFrame(tick);
+        };
+
+        const setTargetFromPointer = (event: PointerEvent): void => {
+          const rect = hero.getBoundingClientRect();
+          if (rect.width < 1 || rect.height < 1) {
+            return;
+          }
+
+          const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          const ny = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+
+          state.mx = clamp(nx, -1, 1);
+          state.my = clamp(ny, -1, 1);
+          active = true;
+          queueTick();
+        };
+
+        const deactivate = (): void => {
+          active = false;
+          queueTick();
+        };
+
+        const onWindowBlur = (): void => {
+          deactivate();
+        };
+
+        const onResize = (): void => {
+          queueTick();
+        };
+
+        const onVisibility = (): void => {
+          if (document.hidden) {
+            deactivate();
+          }
+        };
+
+        const onPointerDown = (event: PointerEvent): void => {
+          setTargetFromPointer(event);
+        };
+
+        const onPointerMove = (event: PointerEvent): void => {
+          setTargetFromPointer(event);
+        };
+
+        const onPointerUp = (): void => {
+          deactivate();
+        };
+
+        const onPointerLeave = (): void => {
+          deactivate();
+        };
+
+        const tick = (): void => {
+          rafId = 0;
+
+          if (!document.body.contains(hero)) {
+            cleanup();
+            return;
+          }
+
+          if (applyScene()) {
+            queueTick();
+          }
+        };
+
+        const cleanup = (): void => {
           window.cancelAnimationFrame(rafId);
           hero.removeEventListener("pointerdown", onPointerDown);
           hero.removeEventListener("pointermove", onPointerMove);
@@ -243,9 +273,10 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
           hero.removeEventListener("pointercancel", onPointerUp);
           hero.removeEventListener("pointerleave", onPointerLeave);
           window.removeEventListener("blur", onWindowBlur);
+          window.removeEventListener("resize", onResize);
           document.removeEventListener("visibilitychange", onVisibility);
-          window.removeEventListener("scroll", deactivate);
-          hero.dataset.dragonBound = "false";
+          window.removeEventListener("scroll", queueTick);
+          hero.dataset.heroBound = "false";
         };
 
         hero.addEventListener("pointerdown", onPointerDown, { passive: true });
@@ -254,20 +285,21 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
         hero.addEventListener("pointercancel", onPointerUp, { passive: true });
         hero.addEventListener("pointerleave", onPointerLeave);
         window.addEventListener("blur", onWindowBlur);
+        window.addEventListener("resize", onResize, { passive: true });
         document.addEventListener("visibilitychange", onVisibility);
-        window.addEventListener("scroll", deactivate, { passive: true });
+        window.addEventListener("scroll", queueTick, { passive: true });
 
-        hero.dataset.dragonBound = "true";
-        tick();
+        hero.dataset.heroBound = "true";
+        applyScene();
       });
     };
 
     if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", initDragonHero, { once: true });
+      document.addEventListener("DOMContentLoaded", initHero, { once: true });
     } else {
-      initDragonHero();
+      initHero();
     }
 
-    document.addEventListener("astro:after-swap", initDragonHero);
+    document.addEventListener("astro:after-swap", initHero);
   })();
 </script>
