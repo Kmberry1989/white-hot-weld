@@ -305,8 +305,8 @@ class WhiteHotFrame extends HTMLElement {
 
             const sx = point.x + point.nx * side;
             const sy = point.y + point.ny * side;
-            const ex = sx - point.dx * length + point.nx * spread;
-            const ey = sy - point.dy * length + point.ny * spread;
+            const ex = sx + point.dx * length + point.nx * spread;
+            const ey = sy + point.dy * length + point.ny * spread;
 
             spark.setAttribute('x1', sx.toFixed(2));
             spark.setAttribute('y1', sy.toFixed(2));
