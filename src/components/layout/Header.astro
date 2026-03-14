@@ -15,8 +15,16 @@ const isActive = (href: string): boolean => {
     return currentPath === "/";
   }
 
+  if (href === "/gallery/lowres") {
+    return currentPath === href || currentPath.startsWith(`${href}/`);
+  }
+
   if (href === "/gallery" && currentPath.startsWith("/work/")) {
     return true;
+  }
+
+  if (href === "/gallery") {
+    return currentPath === href;
   }
 
   return currentPath === href || currentPath.startsWith(`${href}/`);
