@@ -178,9 +178,14 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
           const phi = clamp(phiBase, 58, 86);
           models.forEach((model) => {
             const group = model.dataset.heroGroup;
-            const radiusOffset = group === "dragon" ? 10 : 0;
+            const thetaOffset = group === "dragon" ? -6 : 7;
+            const phiOffset = group === "dragon" ? 1.2 : -2.4;
+            const radiusOffset = group === "dragon" ? 12 : -6;
             const radius = `${(state.radius + radiusOffset).toFixed(1)}%`;
-            model.setAttribute("camera-orbit", `${thetaBase.toFixed(2)}deg ${phi.toFixed(2)}deg ${radius}`);
+            model.setAttribute(
+              "camera-orbit",
+              `${(thetaBase + thetaOffset).toFixed(2)}deg ${clamp(phi + phiOffset, 58, 86).toFixed(2)}deg ${radius}`
+            );
           });
 
           const settled =
