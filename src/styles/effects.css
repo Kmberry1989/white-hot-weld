@@ -110,6 +110,15 @@ body[data-effect-preset="home"] .arc-flash-canvas {
   background: transparent;
 }
 
+@media (max-width: 47.5rem) {
+  .motorcycle-track {
+    bottom: clamp(1.25rem, 10vh, 4.5rem);
+    width: clamp(13rem, 66vw, 21rem);
+    height: clamp(6.5rem, 34vw, 11rem);
+    transform-origin: 42% 88%;
+  }
+}
+
 .site-shell {
   position: relative;
   z-index: 2;

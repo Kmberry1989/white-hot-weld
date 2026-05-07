@@ -39,7 +39,6 @@ function easeInOutCubic(value: number): number {
 function shouldDisableMotorcycleRide(disabledFlag: boolean): boolean {
   if (disabledFlag) return true;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return true;
-  if (window.innerWidth < 760) return true;
   return false;
 }
 
@@ -126,6 +125,7 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
   let height = Math.max(1, window.innerHeight);
   let hidden = document.hidden;
   const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  const isMobileViewport = (): boolean => window.innerWidth < 760;
 
   let outboundProgress = 0;
   let returnStarted = false;
@@ -137,10 +137,12 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
   let wheeliePeakReached = false;
 
   const triggerDelayMs = 2000;
-  const outboundDurationSeconds = 5.8;
-  const returnDurationSeconds = 2.5;
+  const outboundDurationSeconds = isMobileViewport() ? 4.8 : 5.8;
+  const returnDurationSeconds = isMobileViewport() ? 2.05 : 2.5;
   const showcaseStartDelayMs = 1700;
   const showcaseSpinSpeedDegPerSecond = 11;
+  const fadeStartDelayMs = isMobileViewport() ? 450 : 1050;
+  const fadeDurationMs = isMobileViewport() ? 900 : 1400;
   let motionSign = -1;
   let triggerArmed = false;
   let triggerReady = false;
@@ -153,6 +155,7 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
   let lastTrackX = Number.NaN;
   let lastFrameTime = 0;
   let animationLoadToken = 0;
+  let fadedOut = false;
 
   let smokeAccumulator = 0;
   let smokeParticles: SmokeParticle[] = [];
@@ -409,11 +412,17 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
     const deltaX = x - lastTrackX;
     lastTrackX = x;
 
+    const fadeElapsed = parked ? Math.max(0, now - parkedAtTime - fadeStartDelayMs) : 0;
+    const fadeProgress = parked ? clamp(fadeElapsed / fadeDurationMs, 0, 1) : 0;
+    if (parked && fadeProgress >= 1) {
+      fadedOut = true;
+    }
+
     const lift = -48 * wheelieAmount;
     const tilt = (returnStarted ? 6 : 0) + (returnStarted ? -12 : 12) * wheelieAmount;
     const scale = returnStarted ? 1.06 - returnEased * 0.2 : 1.02;
     const mirror = returnStarted ? 1 : -1;
-    const opacityTarget = parked ? 0.95 : 1;
+    const opacityTarget = parked ? 0.95 * (1 - fadeProgress) : 1;
     const currentOpacity = Number(track.dataset.opacity ?? "0");
     const nextOpacity = currentOpacity + (opacityTarget - currentOpacity) * 0.08;
     track.dataset.opacity = String(nextOpacity);
@@ -427,12 +436,15 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
     track.style.setProperty("--motorcycle-motion-blur", `${nextMotionBlur.toFixed(2)}px`);
     track.style.transform = `translate3d(${x.toFixed(2)}px, ${lift.toFixed(2)}px, 0) rotate(${tilt.toFixed(2)}deg) scale(${scale.toFixed(3)}) scaleX(${mirror})`;
 
-    if (parked) {
+    if (parked && fadeProgress < 1) {
       const showcaseElapsed = Math.max(0, now - parkedAtTime - showcaseStartDelayMs);
       const showcaseSpin = (showcaseElapsed / 1000) * showcaseSpinSpeedDegPerSecond;
       const showcaseOrbit = -58 + showcaseSpin;
       const showcasePitch = 77 + Math.sin(showcaseElapsed / 1000) * 1.1;
       model.setAttribute("camera-orbit", `${showcaseOrbit.toFixed(2)}deg ${showcasePitch.toFixed(2)}deg 84%`);
+      model.setAttribute("field-of-view", "30deg");
+    } else if (parked) {
+      model.setAttribute("camera-orbit", "-58deg 77deg 84%");
       model.setAttribute("field-of-view", "30deg");
     } else if (returnStarted) {
       model.setAttribute("camera-orbit", "-72deg 76deg 72%");
@@ -444,8 +456,14 @@ export function initMotorcycleRide(_layer: HTMLElement, _preset: EffectPreset | 
 
     updateModelAnimation(deltaX);
 
-    spawnSmoke(dtSeconds, motionSign, returnStarted && !parked);
+    spawnSmoke(dtSeconds, motionSign, returnStarted && !parked && !fadedOut);
     renderSmoke(dtSeconds);
+
+    if (fadedOut && nextOpacity <= 0.02 && smokeParticles.length === 0) {
+      runner.dataset.active = "false";
+      window.cancelAnimationFrame(rafId);
+      return;
+    }
   };
 
   resize();
