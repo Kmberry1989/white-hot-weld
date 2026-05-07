@@ -272,7 +272,7 @@
 
 @media (max-width: 61.99rem) {
   .stageShell {
-    inset: 12% 1% 8% 1%;
+    inset: 2.5rem 1% 10% 1%;
   }
 
   .stageDivider {
@@ -287,16 +287,16 @@
   }
 
   .modelStage {
-    inset: 32% 1% 10% -6%;
-    transform-origin: 39% 66%;
+    inset: 6% 1% 12% -5%;
+    transform-origin: 38% 60%;
   }
 
   .dragonGroup {
-    transform: translate3d(2%, 20%, 0) scale(0.45);
+    transform: translate3d(1%, 10%, 0) scale(0.62);
   }
 
   .roseGroup {
-    transform: translate3d(12%, 7%, 0) scale(0.41);
+    transform: translate3d(14%, 2%, 0) scale(0.56);
   }
 
   .flashWash {
