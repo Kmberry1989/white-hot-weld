@@ -2,7 +2,9 @@ import type { SocialLink } from "../types/ui";
 
 export interface SiteContactInfo {
   email?: string;
+  facebook?: string;
   instagram?: string;
+  phone?: string;
   location?: string;
   serviceArea?: string;
   responseTime?: string;
@@ -26,7 +28,9 @@ export const siteConfig: SiteConfig = {
   defaultOgImage: "/images/branding/whitehotweld.png",
   contact: {
     email: undefined,
-    instagram: undefined,
+    facebook: "https://www.facebook.com/whitehotweld/",
+    instagram: "https://www.instagram.com/white_hot_weld/",
+    phone: "7656217159",
     location: "Kokomo, IN",
     serviceArea: "Available for original pieces and commission inquiries across the U.S.",
     responseTime: "Expect a personal reply within 2-3 business days.",
@@ -37,8 +41,16 @@ export const siteConfig: SiteConfig = {
 export function getSocialLinks(): SocialLink[] {
   const links: SocialLink[] = [];
 
+  if (siteConfig.contact.facebook) {
+    links.push({ href: siteConfig.contact.facebook, label: "Facebook" });
+  }
+
   if (siteConfig.contact.instagram) {
     links.push({ href: siteConfig.contact.instagram, label: "Instagram" });
+  }
+
+  if (siteConfig.contact.phone) {
+    links.push({ href: `tel:${siteConfig.contact.phone}`, label: "Call" });
   }
 
   if (siteConfig.contact.email) {

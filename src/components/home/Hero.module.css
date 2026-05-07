@@ -24,7 +24,7 @@
 
 .stageShell {
   position: absolute;
-  inset: 6% 2% 4% 35%;
+  inset: 4% 1.5% 3% 33%;
   z-index: 1;
   pointer-events: none;
 }
@@ -52,7 +52,7 @@
 .stageFrame {
   position: absolute;
   inset: 0;
-  overflow: clip;
+  overflow: visible;
   border-radius: clamp(1rem, 1.8vw, 1.45rem);
   border: 1px solid rgba(255, 176, 109, 0.18);
   background:
@@ -78,10 +78,10 @@
   --hero-model-dynamic-blur: 2.8px;
   --hero-model-obscure-opacity: 1;
   position: absolute;
-  inset: 4% 2% 2% 2%;
+  inset: 12% 2% 2% 2%;
   opacity: var(--hero-model-obscure-opacity);
   transform: scale(var(--hero-model-scale));
-  transform-origin: 36% 60%;
+  transform-origin: 37% 62%;
   transition:
     transform 260ms ease,
     opacity 340ms ease;
@@ -107,12 +107,12 @@
 }
 
 .dragonGroup {
-  transform: translate3d(0%, 14%, 0) scale(0.54);
+  transform: translate3d(2%, 22%, 0) scale(0.42);
   opacity: 0.3;
 }
 
 .roseGroup {
-  transform: translate3d(17%, 4%, 0) scale(0.52);
+  transform: translate3d(15%, 7%, 0) scale(0.45);
   opacity: 0.38;
 }
 
@@ -219,15 +219,15 @@
 
 @keyframes hero-model-drift {
   0% {
-    transform: translate3d(1.2%, 0.9%, 0) scale(1);
+    transform: translate3d(0.8%, 0.7%, 0) scale(1);
   }
 
   50% {
-    transform: translate3d(-1.8%, -1.1%, 0) scale(1.03);
+    transform: translate3d(-1.1%, -0.7%, 0) scale(1.01);
   }
 
   100% {
-    transform: translate3d(1.2%, 0.9%, 0) scale(1);
+    transform: translate3d(0.8%, 0.7%, 0) scale(1);
   }
 }
 
@@ -272,7 +272,7 @@
 
 @media (max-width: 61.99rem) {
   .stageShell {
-    inset: 12% 2% 8% 2%;
+    inset: 12% 1% 8% 1%;
   }
 
   .stageDivider {
@@ -287,16 +287,16 @@
   }
 
   .modelStage {
-    inset: 24% 0 10% -10%;
-    transform-origin: 36% 62%;
+    inset: 32% 1% 10% -6%;
+    transform-origin: 39% 66%;
   }
 
   .dragonGroup {
-    transform: translate3d(0%, 16%, 0) scale(0.54);
+    transform: translate3d(2%, 20%, 0) scale(0.45);
   }
 
   .roseGroup {
-    transform: translate3d(14%, 5%, 0) scale(0.46);
+    transform: translate3d(12%, 7%, 0) scale(0.41);
   }
 
   .flashWash {
