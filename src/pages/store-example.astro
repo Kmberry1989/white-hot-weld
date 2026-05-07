@@ -1,0 +1,84 @@
+---
+import StoreLayout from '../components/layout/StoreLayout.astro';
+import BuyButton from '../components/ui/BuyButton.astro';
+---
+
+<StoreLayout title="Store Examples | White Hot Weld">
+  <section class="store-demo">
+    <h1>Storefront Integration Demo</h1>
+    
+    <div class="product-grid">
+      
+      <!-- Example 1: Stripe Integration -->
+      <article class="product-card">
+        <img src="/images/library/store/dragon catcher/dragon_catcher_1.jpg" alt="Dragon Catcher" width="400" />
+        <h2>Dragon Catcher (Stripe Example)</h2>
+        <p>This button uses the ultra-lean Stripe Payment Link. Clicking it will take you directly to Stripe's secure checkout.</p>
+        
+        <BuyButton 
+          mode="stripe"
+          name="Dragon Catcher"
+          price="850.00"
+          stripeLink="https://buy.stripe.com/test_your_generated_link_here"
+        />
+      </article>
+
+      <!-- Example 2: Snipcart Integration -->
+      <article class="product-card">
+        <img src="/images/library/store/dragon catcher/dragon_catcher_2.jpg" alt="Dragon Catcher Detail" width="400" />
+        <h2>Dragon Catcher (Snipcart Example)</h2>
+        <p>This button uses Snipcart. Clicking it will open an interactive shopping cart overlay right here on the website.</p>
+        
+        <!-- 
+          Note: data-item-url MUST match the URL where this button lives 
+          so Snipcart's servers can verify the price hasn't been tampered with.
+        -->
+        <BuyButton 
+          mode="snipcart"
+          id="dragon-catcher-01"
+          name="Dragon Catcher"
+          price="850.00"
+          url="/store-example" 
+          image="/images/library/store/dragon catcher/dragon_catcher_1.jpg"
+          description="Custom welded dragon catcher physical sculpture."
+        />
+      </article>
+
+    </div>
+  </section>
+</StoreLayout>
+
+<style>
+  .store-demo {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    color: #fff;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+
+  .product-card {
+    border: 1px solid #333;
+    padding: 1.5rem;
+    background: rgba(20, 20, 20, 0.8);
+  }
+
+  .product-card img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+  }
+
+  h1, h2 {
+    font-family: serif;
+    letter-spacing: 0.05em;
+  }
+</style>

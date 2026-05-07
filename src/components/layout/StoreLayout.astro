@@ -1,0 +1,46 @@
+---
+// This is your store layout wrapper. 
+// Snipcart requires its CSS, JS, and a hidden config div to be present on every page where a cart might be used.
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const { 
+  title = "White Hot Weld Store", 
+  description = "Custom welded art and sculptures for sale." 
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="description" content={description} />
+		<title>{title}</title>
+
+    <!-- 1. SNIPCART CSS -->
+    <link rel="preconnect" href="https://app.snipcart.com" />
+    <link rel="preconnect" href="https://cdn.snipcart.com" />
+    <link rel="stylesheet" href="https://cdn.snipcart.com/themes/v3.2.2/default/snipcart.css" />
+	</head>
+	<body>
+    <!-- Main Header would go here -->
+    
+    <main>
+		  <slot />
+    </main>
+
+    <!-- Main Footer would go here -->
+
+    <!-- 2. SNIPCART HIDDEN CONFIG -->
+    <!-- Replace data-api-key with your actual public Test or Live key from your Snipcart Dashboard -->
+    <div hidden id="snipcart" data-api-key="YOUR_SNIPCART_PUBLIC_API_KEY"></div>
+
+    <!-- 3. SNIPCART JAVASCRIPT -->
+    <script async src="https://cdn.snipcart.com/themes/v3.2.2/default/snipcart.js"></script>
+	</body>
+</html>

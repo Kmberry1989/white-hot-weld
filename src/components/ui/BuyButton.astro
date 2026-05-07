@@ -1,0 +1,81 @@
+---
+// A reusable component to handle either Stripe or Snipcart checkouts.
+// This keeps your page markdown/components clean.
+
+interface Props {
+  mode: "stripe" | "snipcart";
+  
+  // Shared props
+  name: string;
+  price: number | string;
+  
+  // Stripe specific props
+  stripeLink?: string; // e.g., https://buy.stripe.com/test_12345
+  
+  // Snipcart specific props
+  id?: string;
+  url?: string;
+  image?: string;
+  description?: string;
+}
+
+const {
+  mode,
+  name,
+  price,
+  stripeLink,
+  id,
+  url,
+  image,
+  description
+} = Astro.props;
+---
+
+{mode === "stripe" ? (
+  <!-- STRIPE PAYMENT LINK INTEGRATION -->
+  <a 
+    href={stripeLink} 
+    class="buy-button stripe-button"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Buy {name} - ${price}
+  </a>
+) : (
+  <!-- SNIPCART BUTTON INTEGRATION -->
+  <button 
+    class="buy-button snipcart-add-item"
+    data-item-id={id}
+    data-item-price={price}
+    data-item-url={url}
+    data-item-description={description}
+    data-item-image={image}
+    data-item-name={name}
+  >
+    Add {name} to Cart - ${price}
+  </button>
+)}
+
+<style>
+  /* Basic styling to match the White Hot Weld premium feel */
+  .buy-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #f1f1f1;
+    color: #111;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    border: 1px solid #fff;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .buy-button:hover {
+    background-color: #111;
+    color: #f1f1f1;
+    border-color: #555;
+  }
+</style>
