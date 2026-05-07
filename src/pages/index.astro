@@ -43,7 +43,6 @@ function parsePeople(markdown: string): Person[] {
 
 const people = parsePeople(about.body);
 const hero = home.data.hero;
-const heroMedia = hero.mediaSrc && hero.mediaAlt ? { src: hero.mediaSrc, alt: hero.mediaAlt } : undefined;
 const dragonModelSrc = "/models/dragon.glb";
 const roseModelSrc = "/models/rose.glb";
 ---
@@ -70,7 +69,6 @@ const roseModelSrc = "/models/rose.glb";
     }
     dragonModelSrc={dragonModelSrc}
     roseModelSrc={roseModelSrc}
-    dragonPosterSrc={heroMedia?.src}
   />
 
   <Section id="what-this-is" kicker="What This Is" title={home.data.title} lede={home.data.description}>

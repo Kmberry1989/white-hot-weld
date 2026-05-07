@@ -17,11 +17,6 @@ export interface CtaLink {
   label: string;
 }
 
-export interface HeroMedia {
-  src: string;
-  alt: string;
-}
-
 export interface CuratedImage {
   src: string;
   alt: string;

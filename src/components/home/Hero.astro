@@ -1,5 +1,5 @@
 ---
-import type { CtaLink, HeroMedia } from "../../types/ui";
+import type { CtaLink } from "../../types/ui";
 import PageContainer from "../layout/PageContainer.astro";
 import styles from "./Hero.module.css";
 
@@ -9,10 +9,8 @@ interface Props {
   subtitle: string;
   primaryCta: CtaLink;
   secondaryCta?: CtaLink;
-  media?: HeroMedia;
   dragonModelSrc?: string;
   roseModelSrc?: string;
-  dragonPosterSrc?: string;
 }
 
 const {
@@ -21,10 +19,8 @@ const {
   subtitle,
   primaryCta,
   secondaryCta,
-  media,
   dragonModelSrc = "/models/dragon.glb",
-  roseModelSrc = "/models/rose.glb",
-  dragonPosterSrc
+  roseModelSrc = "/models/rose.glb"
 } = Astro.props;
 
 const sparks = Array.from({ length: 22 }, (_, index) => {
@@ -48,7 +44,6 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
       <div class={`${styles.modelGroup} ${styles.dragonGroup}`} data-hero-group="dragon">
         <model-viewer
           src={dragonModelSrc}
-          poster={dragonPosterSrc}
           class={styles.modelViewer}
           data-hero-model
           data-hero-group="dragon"
@@ -62,20 +57,21 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
         />
       </div>
       <div class={`${styles.modelGroup} ${styles.roseGroup}`} data-hero-group="rose">
-        <model-viewer
-          src={roseModelSrc}
-          poster={dragonPosterSrc}
-          class={styles.modelViewer}
-          data-hero-model
-          data-hero-group="rose"
-          autoplay
-          animation-speed="0.74"
-          interaction-prompt="none"
-          disable-zoom
-          disable-pan
-          shadow-intensity="1.15"
-          exposure="1.15"
-        />
+        <div class={styles.roseSpin}>
+          <model-viewer
+            src={roseModelSrc}
+            class={styles.modelViewer}
+            data-hero-model
+            data-hero-group="rose"
+            autoplay
+            animation-speed="0.74"
+            interaction-prompt="none"
+            disable-zoom
+            disable-pan
+            shadow-intensity="1.15"
+            exposure="1.15"
+          />
+        </div>
       </div>
     </div>
     <div class={styles.sparkField}>
@@ -105,12 +101,6 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
         )}
       </div>
     </div>
-
-    {media && (
-      <div class={styles.mediaWrap} data-reveal>
-        <img src={media.src} alt={media.alt} loading="eager" fetchpriority="high" class={styles.media} />
-      </div>
-    )}
   </PageContainer>
 </section>
 
