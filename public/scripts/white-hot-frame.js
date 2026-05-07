@@ -14,6 +14,7 @@ class WhiteHotFrame extends HTMLElement {
         this.rafId = 0;
         this.lastTime = 0;
         this.travel = 0;
+        this.direction = -1;
         this.sparkEls = [];
     }
 
@@ -267,7 +268,7 @@ class WhiteHotFrame extends HTMLElement {
 
         const cooling = this.hasAttribute('cooling');
         const speed = cooling ? 36 : 180;
-        this.travel = (this.travel + dt * speed) % this.perimeter;
+        this.travel = (this.travel + dt * speed * this.direction) % this.perimeter;
 
         const point = this.pointAt(this.travel);
         if (!point) {
