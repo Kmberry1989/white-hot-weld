@@ -9,7 +9,7 @@ widthInches: 10
 heightInches: 10
 depthInches: 7
 price: "$65"
-stripePaymentLink: "https://buy.stripe.com/test_your_generated_link_here"
+stripePaymentLink: "https://buy.stripe.com/test_aFa8wPc04eUR6ladzQ2wU00"
 excerpt: A handmade metal piece that brings a playful, whimsical accent to a room.
 featured: true
 coverImage: dragon-catcher.jpg
