@@ -57,21 +57,19 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
         />
       </div>
       <div class={`${styles.modelGroup} ${styles.roseGroup}`} data-hero-group="rose">
-        <div class={styles.roseSpin}>
-          <model-viewer
-            src={roseModelSrc}
-            class={styles.modelViewer}
-            data-hero-model
-            data-hero-group="rose"
-            autoplay
-            animation-speed="0.42"
-            interaction-prompt="none"
-            disable-zoom
-            disable-pan
-            shadow-intensity="1.15"
-            exposure="1.15"
-          />
-        </div>
+        <model-viewer
+          src={roseModelSrc}
+          class={styles.modelViewer}
+          data-hero-model
+          data-hero-group="rose"
+          autoplay
+          animation-speed="0.42"
+          interaction-prompt="none"
+          disable-zoom
+          disable-pan
+          shadow-intensity="1.15"
+          exposure="1.15"
+        />
       </div>
     </div>
     <div class={styles.sparkField}>
@@ -137,6 +135,7 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
 
         let active = false;
         let rafId = 0;
+        let lastOrbitTheta = Number.NaN;
 
         const updateFromLayout = (): number => {
           const rect = hero.getBoundingClientRect();
@@ -145,6 +144,7 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
 
         const applyScene = (): boolean => {
           const scrollProgress = updateFromLayout();
+          const timeSeconds = performance.now() / 1000;
 
           state.tx += (state.mx - state.tx) * 0.16;
           state.ty += (state.my - state.ty) * 0.16;
@@ -168,14 +168,19 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
           const phi = clamp(phiBase, 58, 86);
           models.forEach((model) => {
             const group = model.dataset.heroGroup;
-            const thetaOffset = group === "dragon" ? -6 : 7;
+            const orbitDrift = group === "rose" ? timeSeconds * 6.2 : 0;
+            const thetaOffset = group === "dragon" ? -6 : 7 + orbitDrift;
             const phiOffset = group === "dragon" ? 1.2 : -2.4;
             const radiusOffset = group === "dragon" ? 12 : -6;
             const radius = `${(state.radius + radiusOffset).toFixed(1)}%`;
+            const theta = thetaBase + thetaOffset;
             model.setAttribute(
               "camera-orbit",
-              `${(thetaBase + thetaOffset).toFixed(2)}deg ${clamp(phi + phiOffset, 58, 86).toFixed(2)}deg ${radius}`
+              `${theta.toFixed(2)}deg ${clamp(phi + phiOffset, 58, 86).toFixed(2)}deg ${radius}`
             );
+            if (group === "rose") {
+              lastOrbitTheta = theta;
+            }
           });
 
           const settled =
@@ -185,7 +190,8 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
             Math.abs(state.ty - state.y) < 0.001 &&
             Math.abs(targetZoom - state.zoom) < 0.001 &&
             Math.abs(targetRadius - state.radius) < 0.02 &&
-            Math.abs(targetBlur - state.blur) < 0.02;
+            Math.abs(targetBlur - state.blur) < 0.02 &&
+            Math.abs(((thetaBase + 7 + timeSeconds * 6.2) - lastOrbitTheta)) < 0.02;
 
           return !settled;
         };

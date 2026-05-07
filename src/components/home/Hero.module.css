@@ -74,15 +74,6 @@
   opacity: 0.38;
 }
 
-.roseSpin {
-  position: absolute;
-  inset: 0;
-  animation: rose-slow-spin 58s linear infinite;
-  transform-origin: 50% 56%;
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
 .modelViewer {
   position: absolute;
   inset: 0;
@@ -198,20 +189,6 @@
   }
 }
 
-@keyframes rose-slow-spin {
-  0% {
-    transform: rotateY(0deg);
-  }
-
-  50% {
-    transform: rotateY(180deg);
-  }
-
-  100% {
-    transform: rotateY(360deg);
-  }
-}
-
 @keyframes spark-flight {
   0% {
     opacity: 0;
@@ -272,7 +249,6 @@
 @media (prefers-reduced-motion: reduce) {
   .dragonGroup,
   .roseGroup,
-  .roseSpin,
   .modelViewer,
   .spark,
   .flashWash {
