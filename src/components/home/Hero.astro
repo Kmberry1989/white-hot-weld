@@ -43,8 +43,6 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
     <div class={styles.stageShell}>
       <div class={styles.stageDivider}></div>
       <div class={styles.stageFrame}>
-        <div class={styles.stageLetterboxTop}></div>
-        <div class={styles.stageLetterboxBottom}></div>
         <div class={styles.modelStage} data-hero-stage>
           <div class={`${styles.modelGroup} ${styles.dragonGroup}`} data-hero-group="dragon">
             <model-viewer
@@ -106,7 +104,6 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
         )}
       </div>
     </div>
-    <div class={styles.desktopDivider} aria-hidden="true"></div>
   </PageContainer>
 </section>
 
