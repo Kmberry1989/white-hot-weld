@@ -39,6 +39,7 @@ export interface WorkSummary {
   medium?: string;
   dimensions: string;
   price?: string;
+  stripePaymentLink?: string;
   status?: "available" | "sold" | "commissioned";
   coverImage: ImageMetadata;
   storeImages?: string[];

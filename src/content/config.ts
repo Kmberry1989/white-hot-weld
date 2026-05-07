@@ -35,6 +35,7 @@ const work = defineCollection({
     heightInches: z.number().optional(),
     depthInches: z.number().optional(),
     price: z.string().optional(),
+    stripePaymentLink: z.string().url().optional(),
     excerpt: z.string(),
     featured: z.boolean(),
     coverImage: z.string(),

@@ -46,6 +46,7 @@ const statusLabel =
               poster={storeImages[0] ? encodeURI(storeImages[0]) : undefined}
               class={styles.modelViewer}
               auto-rotate
+              rotation-per-second="10deg"
               interaction-prompt="none"
               disable-zoom
               shadow-intensity="0.8"
@@ -102,7 +103,9 @@ const statusLabel =
       {item.price && <p class={styles.price}>{item.price}</p>}
       <p class={styles.meta}>{item.medium ?? item.materials}</p>
       <p class={styles.excerpt}>{item.excerpt}</p>
-      <p class={styles.linkPrompt}>{item.status === "available" ? "View details and inquire" : "View details"}</p>
+      <p class={styles.linkPrompt}>
+        {item.status === "available" ? (item.stripePaymentLink ? "View details and test checkout" : "View details and inquire") : "View details"}
+      </p>
     </div>
   </a>
 </article>

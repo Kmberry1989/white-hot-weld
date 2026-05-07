@@ -20,6 +20,7 @@ export interface WorkItem {
   heightInches?: number;
   depthInches?: number;
   price?: string;
+  stripePaymentLink?: string;
   featured: boolean;
   status?: WorkStatus;
   coverImage: ImageMetadata;

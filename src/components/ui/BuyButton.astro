@@ -4,14 +4,16 @@
 
 interface Props {
   mode: "stripe" | "snipcart";
-  
+
   // Shared props
   name: string;
   price: number | string;
-  
+
   // Stripe specific props
   stripeLink?: string; // e.g., https://buy.stripe.com/test_12345
-  
+  label?: string;
+  className?: string;
+
   // Snipcart specific props
   id?: string;
   url?: string;
@@ -24,27 +26,27 @@ const {
   name,
   price,
   stripeLink,
+  label,
+  className,
   id,
   url,
   image,
   description
 } = Astro.props;
+
+const buttonLabel = label ?? `Buy ${name} - ${price}`;
+const classes = ["buy-button", mode === "stripe" ? "stripe-button" : "snipcart-button", className]
+  .filter(Boolean)
+  .join(" ");
 ---
 
 {mode === "stripe" ? (
-  <!-- STRIPE PAYMENT LINK INTEGRATION -->
-  <a 
-    href={stripeLink} 
-    class="buy-button stripe-button"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Buy {name} - ${price}
+  <a href={stripeLink} class={classes} target="_blank" rel="noopener noreferrer">
+    {buttonLabel}
   </a>
 ) : (
-  <!-- SNIPCART BUTTON INTEGRATION -->
-  <button 
-    class="buy-button snipcart-add-item"
+  <button
+    class={`${classes} snipcart-add-item`}
     data-item-id={id}
     data-item-price={price}
     data-item-url={url}
@@ -52,30 +54,31 @@ const {
     data-item-image={image}
     data-item-name={name}
   >
-    Add {name} to Cart - ${price}
+    {buttonLabel}
   </button>
 )}
 
 <style>
-  /* Basic styling to match the White Hot Weld premium feel */
   .buy-button {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: #f1f1f1;
-    color: #111;
-    text-transform: uppercase;
-    font-weight: bold;
-    letter-spacing: 0.05em;
-    border: 1px solid #fff;
-    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.72rem 1rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
     text-decoration: none;
-    transition: all 0.3s ease;
+    background: var(--color-accent);
+    color: #0f1113;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition:
+      background 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease;
     font-family: inherit;
   }
 
   .buy-button:hover {
-    background-color: #111;
-    color: #f1f1f1;
-    border-color: #555;
+    background: var(--color-accent-soft);
   }
 </style>

@@ -41,6 +41,7 @@ async function toWorkItem(entry: WorkEntry): Promise<WorkItem> {
     heightInches: entry.data.heightInches,
     depthInches: entry.data.depthInches,
     price: entry.data.price,
+    stripePaymentLink: entry.data.stripePaymentLink,
     featured: entry.data.featured,
     status: entry.data.status,
     coverImage: await resolveImage(entry.data.coverImage),

@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import BuyButton from "../../components/ui/BuyButton.astro";
 import SiteLayout from "../../components/layout/SiteLayout.astro";
 import PageContainer from "../../components/layout/PageContainer.astro";
 import { getAllWork } from "../../lib/content";
@@ -25,6 +26,7 @@ const aboutText = work.aboutItem ?? work.excerpt;
 const statusLabel =
   work.status === "sold" ? "Sold" : work.status === "commissioned" ? "Commissioned" : work.status === "available" ? "Available" : undefined;
 const inquiryHref = `/contact?item=${encodeURIComponent(work.slug)}`;
+const hasStripeTestCheckout = work.status === "available" && Boolean(work.stripePaymentLink);
 const shippingCopy = work.shippingWindow ?? work.shippingEstimate;
 const makerMentionedInAbout = (() => {
   if (!work.maker) {
@@ -53,6 +55,7 @@ const makerMentionedInAbout = (() => {
               class="viewer"
               camera-controls
               auto-rotate
+              rotation-per-second="8deg"
               shadow-intensity="0.9"
               exposure="1.1"
             />
@@ -78,11 +81,24 @@ const makerMentionedInAbout = (() => {
       {work.price && <p class="price">{work.price}</p>}
       <p class="excerpt">{work.excerpt}</p>
       <div class="actions">
+        {
+          hasStripeTestCheckout && work.price && (
+            <BuyButton
+              mode="stripe"
+              name={work.title}
+              price={work.price}
+              stripeLink={work.stripePaymentLink}
+              label="Buy in Stripe test mode"
+              className="shop-button"
+            />
+          )
+        }
         <a class="primary" href={inquiryHref}>
           {work.status === "available" ? "Inquire about this piece" : "Ask about a similar commission"}
         </a>
         <a class="secondary" href="/gallery">Browse available work</a>
       </div>
+      {hasStripeTestCheckout && <p class="test-note">Stripe test mode is enabled for this piece. Use test card details only.</p>}
     </header>
 
     <section class="detail-block" data-reveal>
@@ -317,6 +333,16 @@ const makerMentionedInAbout = (() => {
     font-size: clamp(1.45rem, 4vw, 2rem);
     font-weight: 600;
     margin-top: 0.2rem;
+  }
+
+  .shop-button {
+    order: -1;
+  }
+
+  .test-note {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.92rem;
   }
 
   .status {

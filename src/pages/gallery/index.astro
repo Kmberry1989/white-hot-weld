@@ -1,4 +1,5 @@
 ---
+import BuyButton from "../../components/ui/BuyButton.astro";
 import SiteLayout from "../../components/layout/SiteLayout.astro";
 import Section from "../../components/ui/Section.astro";
 import WorkCard from "../../components/ui/WorkCard.astro";
@@ -31,6 +32,17 @@ const { Content } = await page.render();
 
     <div class="actions" data-reveal>
       {featuredAvailableWork && <a class="primary" href={`/work/${featuredAvailableWork.slug}`}>View available piece</a>}
+      {
+        featuredAvailableWork?.stripePaymentLink && featuredAvailableWork.price && (
+          <BuyButton
+            mode="stripe"
+            name={featuredAvailableWork.title}
+            price={featuredAvailableWork.price}
+            stripeLink={featuredAvailableWork.stripePaymentLink}
+            label="Stripe test checkout"
+          />
+        )
+      }
       <a class="secondary" href="/contact">Commission custom work</a>
       <a class="secondary" href="/gallery/lowres">View image gallery</a>
     </div>
