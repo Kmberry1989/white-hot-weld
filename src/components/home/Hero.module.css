@@ -2,15 +2,15 @@
   position: relative;
   isolation: isolate;
   overflow: clip;
-  padding-block: var(--space-8);
-  min-height: clamp(34rem, 82vh, 56rem);
+  padding-block: clamp(3.4rem, 7vh, 5.5rem);
+  min-height: clamp(32rem, 74vh, 50rem);
 }
 
 .container {
   position: relative;
   z-index: 2;
   display: grid;
-  gap: var(--space-6);
+  gap: clamp(1.5rem, 2.6vw, 3rem);
   align-items: center;
   min-height: inherit;
 }
@@ -20,6 +20,69 @@
   inset: -8% -6% -14%;
   z-index: 0;
   pointer-events: none;
+}
+
+.stageShell {
+  position: absolute;
+  inset: 8% 3% 6% 39%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.stageDivider {
+  position: absolute;
+  top: 11%;
+  bottom: 11%;
+  left: -1.1rem;
+  width: 1px;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0),
+      rgba(255, 184, 136, 0.55) 18%,
+      rgba(255, 184, 136, 0.28) 48%,
+      rgba(108, 159, 193, 0.18) 74%,
+      rgba(255, 255, 255, 0)
+    );
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 0 18px rgba(224, 101, 47, 0.14);
+}
+
+.stageFrame {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  border-radius: clamp(1rem, 1.8vw, 1.45rem);
+  border: 1px solid rgba(255, 176, 109, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0)),
+    linear-gradient(150deg, rgba(16, 21, 29, 0.72), rgba(5, 8, 12, 0.18));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 26px 70px rgba(0, 0, 0, 0.36),
+    0 0 38px rgba(224, 101, 47, 0.08);
+}
+
+.stageLetterboxTop,
+.stageLetterboxBottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: clamp(1rem, 2vw, 1.55rem);
+  background:
+    linear-gradient(180deg, rgba(2, 4, 7, 0.98), rgba(6, 8, 12, 0.92));
+  z-index: 3;
+}
+
+.stageLetterboxTop {
+  top: 0;
+  border-bottom: 1px solid rgba(255, 208, 173, 0.08);
+}
+
+.stageLetterboxBottom {
+  bottom: 0;
+  border-top: 1px solid rgba(255, 208, 173, 0.08);
 }
 
 .shadowVignette {
@@ -36,10 +99,10 @@
   --hero-model-dynamic-blur: 2.8px;
   --hero-model-obscure-opacity: 1;
   position: absolute;
-  inset: 18% 24% 5% -6%;
+  inset: 4% 3% 4% 3%;
   opacity: var(--hero-model-obscure-opacity);
   transform: scale(var(--hero-model-scale));
-  transform-origin: 34% 58%;
+  transform-origin: 34% 57%;
   transition:
     transform 260ms ease,
     opacity 340ms ease;
@@ -65,12 +128,12 @@
 }
 
 .dragonGroup {
-  transform: translate3d(-5%, 14%, 0) scale(0.64);
+  transform: translate3d(-2%, 12%, 0) scale(0.56);
   opacity: 0.3;
 }
 
 .roseGroup {
-  transform: translate3d(25%, 1%, 0) scale(0.58);
+  transform: translate3d(20%, 2%, 0) scale(0.52);
   opacity: 0.38;
 }
 
@@ -121,8 +184,8 @@
 
 .copy {
   display: grid;
-  gap: var(--space-4);
-  max-width: 54ch;
+  gap: clamp(0.9rem, 1.7vw, 1.35rem);
+  max-width: 44ch;
   text-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
 }
 
@@ -140,7 +203,7 @@
 .subtitle {
   color: var(--color-text-muted);
   font-size: clamp(1rem, 2.5vw, 1.2rem);
-  max-width: 42ch;
+  max-width: 36ch;
 }
 
 .actions {
@@ -173,6 +236,10 @@
 
 .secondary:hover {
   border-color: var(--color-accent-soft);
+}
+
+.desktopDivider {
+  display: none;
 }
 
 @keyframes hero-model-drift {
@@ -223,22 +290,59 @@
 
 @media (min-width: 62rem) {
   .container {
-    grid-template-columns: minmax(0, 58ch);
+    grid-template-columns: minmax(0, 42ch) 1fr;
+    column-gap: clamp(2rem, 3.2vw, 4rem);
+  }
+
+  .desktopDivider {
+    display: block;
+    justify-self: stretch;
+    align-self: stretch;
+    width: 1px;
+    margin-inline: auto;
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0),
+        rgba(255, 184, 136, 0.36) 18%,
+        rgba(255, 184, 136, 0.14) 42%,
+        rgba(108, 159, 193, 0.14) 72%,
+        rgba(255, 255, 255, 0)
+      );
+    opacity: 0.85;
   }
 }
 
 @media (max-width: 61.99rem) {
+  .stageShell {
+    inset: 12% 2% 8% 2%;
+  }
+
+  .stageDivider,
+  .desktopDivider,
+  .stageLetterboxTop,
+  .stageLetterboxBottom {
+    display: none;
+  }
+
+  .stageFrame {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
   .modelStage {
-    inset: 28% -2% 12% -24%;
+    inset: 22% -2% 12% -12%;
     transform-origin: 35% 60%;
   }
 
   .dragonGroup {
-    transform: translate3d(-3%, 15%, 0) scale(0.58);
+    transform: translate3d(-2%, 14%, 0) scale(0.58);
   }
 
   .roseGroup {
-    transform: translate3d(18%, 5%, 0) scale(0.5);
+    transform: translate3d(15%, 4%, 0) scale(0.48);
   }
 
   .flashWash {

@@ -40,36 +40,43 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
 <section class={styles.hero} data-hero>
   <div class={styles.backgroundFx} aria-hidden="true">
     <div class={styles.shadowVignette}></div>
-    <div class={styles.modelStage} data-hero-stage>
-      <div class={`${styles.modelGroup} ${styles.dragonGroup}`} data-hero-group="dragon">
-        <model-viewer
-          src={dragonModelSrc}
-          class={styles.modelViewer}
-          data-hero-model
-          data-hero-group="dragon"
-          autoplay
-          animation-speed="0.42"
-          interaction-prompt="none"
-          disable-zoom
-          disable-pan
-          shadow-intensity="1.15"
-          exposure="1.15"
-        />
-      </div>
-      <div class={`${styles.modelGroup} ${styles.roseGroup}`} data-hero-group="rose">
-        <model-viewer
-          src={roseModelSrc}
-          class={styles.modelViewer}
-          data-hero-model
-          data-hero-group="rose"
-          autoplay
-          animation-speed="0.42"
-          interaction-prompt="none"
-          disable-zoom
-          disable-pan
-          shadow-intensity="1.15"
-          exposure="1.15"
-        />
+    <div class={styles.stageShell}>
+      <div class={styles.stageDivider}></div>
+      <div class={styles.stageFrame}>
+        <div class={styles.stageLetterboxTop}></div>
+        <div class={styles.stageLetterboxBottom}></div>
+        <div class={styles.modelStage} data-hero-stage>
+          <div class={`${styles.modelGroup} ${styles.dragonGroup}`} data-hero-group="dragon">
+            <model-viewer
+              src={dragonModelSrc}
+              class={styles.modelViewer}
+              data-hero-model
+              data-hero-group="dragon"
+              autoplay
+              animation-speed="0.42"
+              interaction-prompt="none"
+              disable-zoom
+              disable-pan
+              shadow-intensity="1.15"
+              exposure="1.15"
+            />
+          </div>
+          <div class={`${styles.modelGroup} ${styles.roseGroup}`} data-hero-group="rose">
+            <model-viewer
+              src={roseModelSrc}
+              class={styles.modelViewer}
+              data-hero-model
+              data-hero-group="rose"
+              autoplay
+              animation-speed="0.42"
+              interaction-prompt="none"
+              disable-zoom
+              disable-pan
+              shadow-intensity="1.15"
+              exposure="1.15"
+            />
+          </div>
+        </div>
       </div>
     </div>
     <div class={styles.sparkField}>
@@ -99,6 +106,7 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
         )}
       </div>
     </div>
+    <div class={styles.desktopDivider} aria-hidden="true"></div>
   </PageContainer>
 </section>
 
