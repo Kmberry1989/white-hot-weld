@@ -78,10 +78,10 @@
   --hero-model-dynamic-blur: 2.8px;
   --hero-model-obscure-opacity: 1;
   position: absolute;
-  inset: 1% 1% 1% 1%;
+  inset: 4% 2% 2% 2%;
   opacity: var(--hero-model-obscure-opacity);
   transform: scale(var(--hero-model-scale));
-  transform-origin: 36% 57%;
+  transform-origin: 36% 60%;
   transition:
     transform 260ms ease,
     opacity 340ms ease;
@@ -107,12 +107,12 @@
 }
 
 .dragonGroup {
-  transform: translate3d(-1%, 11%, 0) scale(0.58);
+  transform: translate3d(0%, 14%, 0) scale(0.54);
   opacity: 0.3;
 }
 
 .roseGroup {
-  transform: translate3d(18%, 2%, 0) scale(0.54);
+  transform: translate3d(17%, 4%, 0) scale(0.52);
   opacity: 0.38;
 }
 
@@ -287,16 +287,16 @@
   }
 
   .modelStage {
-    inset: 22% -2% 12% -12%;
-    transform-origin: 35% 60%;
+    inset: 24% 0 10% -10%;
+    transform-origin: 36% 62%;
   }
 
   .dragonGroup {
-    transform: translate3d(-2%, 14%, 0) scale(0.58);
+    transform: translate3d(0%, 16%, 0) scale(0.54);
   }
 
   .roseGroup {
-    transform: translate3d(15%, 4%, 0) scale(0.48);
+    transform: translate3d(14%, 5%, 0) scale(0.46);
   }
 
   .flashWash {

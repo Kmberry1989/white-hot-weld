@@ -156,8 +156,8 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
           state.x += (state.tx - state.x) * 0.08;
           state.y += (state.ty - state.y) * 0.08;
 
-          const targetZoom = active ? 1.06 : 1;
-          const targetRadius = active ? 98 : 116;
+          const targetZoom = active ? 1.02 : 1;
+          const targetRadius = active ? 104 : 116;
           const targetBlur = (active ? 0.22 : 2.8) + scrollProgress * 6.4;
 
           state.zoom += (targetZoom - state.zoom) * 0.065;
@@ -175,7 +175,7 @@ const sparks = Array.from({ length: 22 }, (_, index) => {
             const group = model.dataset.heroGroup;
             const orbitDrift = group === "rose" ? timeSeconds * 6.2 : 0;
             const thetaOffset = group === "dragon" ? -6 : 7 + orbitDrift;
-            const phiOffset = group === "dragon" ? 1.2 : -2.4;
+            const phiOffset = group === "dragon" ? -0.6 : -2.4;
             const radiusOffset = group === "dragon" ? 12 : -6;
             const radius = `${(state.radius + radiusOffset).toFixed(1)}%`;
             const theta = thetaBase + thetaOffset;

@@ -37,8 +37,7 @@
   max-width: 34ch;
 }
 
-.nav,
-.social {
+.nav {
   display: flex;
   flex-wrap: wrap;
   list-style: none;
@@ -49,11 +48,15 @@
 }
 
 .nav a,
-.social a {
+.socialWrap :global(a) {
   color: var(--color-text-muted);
 }
 
 .nav a:hover,
-.social a:hover {
+.socialWrap :global(a:hover) {
   color: var(--color-text);
+}
+
+.socialWrap {
+  justify-self: center;
 }

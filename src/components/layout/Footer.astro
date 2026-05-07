@@ -1,5 +1,6 @@
 ---
 import type { NavItem, SocialLink } from "../../types/ui";
+import SocialIcons from "../ui/SocialIcons.astro";
 import PageContainer from "./PageContainer.astro";
 import styles from "./Footer.module.css";
 
@@ -37,15 +38,9 @@ const { tagline, navItems, socialLinks } = Astro.props;
 
     {
       socialLinks.length > 0 && (
-        <ul class={styles.social}>
-          {
-            socialLinks.map((item) => (
-              <li>
-                <a href={item.href}>{item.label}</a>
-              </li>
-            ))
-          }
-        </ul>
+        <div class={styles.socialWrap}>
+          <SocialIcons links={socialLinks} size="compact" showLabels />
+        </div>
       )
     }
   </PageContainer>
