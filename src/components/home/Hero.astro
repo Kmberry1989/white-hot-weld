@@ -1,312 +1,145 @@
 ---
-import type { CtaLink } from "../../types/ui";
-import PageContainer from "../layout/PageContainer.astro";
-import styles from "./Hero.module.css";
-
-interface Props {
-  eyebrow?: string;
-  title: string;
-  subtitle: string;
-  primaryCta: CtaLink;
-  secondaryCta?: CtaLink;
-  dragonModelSrc?: string;
-  roseModelSrc?: string;
-}
-
-const {
-  eyebrow,
-  title,
-  subtitle,
-  primaryCta,
-  secondaryCta,
-  dragonModelSrc = "/models/dragon.glb",
-  roseModelSrc = "/models/rose.glb"
-} = Astro.props;
-
-const sparks = Array.from({ length: 22 }, (_, index) => {
-  const left = (index * 17.9) % 100;
-  const top = 56 + ((index * 11.7) % 36);
-  const delay = (index * 0.43) % 4.8;
-  const duration = 2.4 + (index % 6) * 0.42;
-  const size = 1.2 + (index % 4) * 0.65;
-  const drift = 20 + (index % 5) * 14;
-  const rise = 38 + (index % 7) * 14;
-  const rotate = -32 + (index % 8) * 8;
-
-  return { left, top, delay, duration, size, drift, rise, rotate };
-});
+import { Image } from "astro:assets";
+import blueQuench from "../../assets/work/blue-quench.png";
 ---
 
-<section class={styles.hero} data-hero>
-  <div class={styles.backgroundFx} aria-hidden="true">
-    <div class={styles.shadowVignette}></div>
-    <div class={styles.stageShell}>
-      <div class={styles.stageDivider}></div>
-      <div class={styles.stageFrame}>
-        <div class={styles.modelStage} data-hero-stage>
-          <div class={`${styles.modelGroup} ${styles.dragonGroup}`} data-hero-group="dragon">
-            <model-viewer
-              src={dragonModelSrc}
-              class={styles.modelViewer}
-              data-hero-model
-              data-hero-group="dragon"
-              autoplay
-              animation-speed="0.42"
-              interaction-prompt="none"
-              disable-zoom
-              disable-pan
-              shadow-intensity="1.15"
-              exposure="1.15"
-            />
-          </div>
-          <div class={`${styles.modelGroup} ${styles.roseGroup}`} data-hero-group="rose">
-            <model-viewer
-              src={roseModelSrc}
-              class={styles.modelViewer}
-              data-hero-model
-              data-hero-group="rose"
-              autoplay
-              animation-speed="0.42"
-              interaction-prompt="none"
-              disable-zoom
-              disable-pan
-              shadow-intensity="1.15"
-              exposure="1.15"
-            />
-          </div>
-        </div>
+<section class="hero-wrapper">
+  <div class="hero-grid">
+    
+    <div class="hero-content" data-reveal>
+      <div class="kicker">Custom Metalworks</div>
+      <h1 class="hero-title">White Hot <span class="accent">Weld</span></h1>
+      <p class="hero-lede">
+        Bespoke metal sculpture and married metalworks. Highlighting the raw texture, heat, and structure of industrial art.
+      </p>
+      <div class="hero-actions">
+        <a href="/gallery" class="btn-primary">Shop Available Work</a>
+        <a href="/contact" class="btn-secondary">Request Commission</a>
       </div>
     </div>
-    <div class={styles.sparkField}>
-      {
-        sparks.map((spark) => (
-          <span
-            class={styles.spark}
-            style={`--spark-left:${spark.left}%; --spark-top:${spark.top}%; --spark-delay:${spark.delay}s; --spark-duration:${spark.duration}s; --spark-size:${spark.size}px; --spark-drift:${spark.drift}px; --spark-rise:${spark.rise}px; --spark-rotate:${spark.rotate}deg;`}
-          ></span>
-        ))
-      }
-    </div>
-    <div class={styles.flashWash}></div>
-  </div>
 
-  <PageContainer size="wide" className={styles.container}>
-    <div class={styles.copy} data-reveal>
-      {eyebrow && <p class={styles.eyebrow}>{eyebrow}</p>}
-      <h1>{title}</h1>
-      <p class={styles.subtitle}>{subtitle}</p>
-      <div class={styles.actions}>
-        <a class={styles.primary} href={primaryCta.href} data-magnetic>{primaryCta.label}</a>
-        {secondaryCta && (
-          <a class={styles.secondary} href={secondaryCta.href} data-magnetic>
-            {secondaryCta.label}
-          </a>
-        )}
-      </div>
+    <div class="hero-visual" data-reveal>
+      <div class="glow-backdrop"></div>
+      <Image 
+        src={blueQuench} 
+        alt="Blue Quench metal sculpture detailing" 
+        class="hero-image" 
+        width={800}
+        loading="eager"
+      />
     </div>
-  </PageContainer>
+
+  </div>
 </section>
 
-<script>
-  (() => {
-    const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
+<style>
+  .hero-wrapper {
+    position: relative;
+    padding: var(--space-6) 0;
+    overflow: hidden;
+  }
 
-    const initHero = () => {
-      document.querySelectorAll("[data-hero]").forEach((heroNode) => {
-        if (!(heroNode instanceof HTMLElement) || heroNode.dataset.heroBound === "true") {
-          return;
-        }
+  .hero-grid {
+    display: grid;
+    gap: var(--space-5);
+    align-items: center;
+  }
 
-        const hero = heroNode;
-        const stage = hero.querySelector<HTMLElement>("[data-hero-stage]");
-        const models = Array.from(hero.querySelectorAll<HTMLElement>("model-viewer[data-hero-model]"));
+  .kicker {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    margin-bottom: var(--space-2);
+    font-weight: 600;
+  }
 
-        if (!(stage instanceof HTMLElement) || models.length === 0) {
-          hero.dataset.heroBound = "true";
-          return;
-        }
+  .hero-title {
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    line-height: 1.1;
+    margin-bottom: var(--space-3);
+    letter-spacing: -0.02em;
+  }
 
-        const state = {
-          x: 0,
-          y: 0,
-          mx: 0,
-          my: 0,
-          tx: 0,
-          ty: 0,
-          blur: 2.8,
-          zoom: 1,
-          radius: 116
-        };
+  .accent {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--color-text);
+    background: linear-gradient(120deg, var(--color-accent), var(--color-text));
+    -webkit-background-clip: text;
+  }
 
-        let active = false;
-        let rafId = 0;
-        let lastOrbitTheta = Number.NaN;
+  .hero-lede {
+    font-size: 1.125rem;
+    color: var(--color-text-muted);
+    max-width: 42ch;
+    margin-bottom: var(--space-4);
+    line-height: 1.6;
+  }
 
-        const updateFromLayout = (): number => {
-          const rect = hero.getBoundingClientRect();
-          return clamp(Math.max(0, -rect.top) / Math.max(rect.height * 0.9, 1), 0, 1);
-        };
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
 
-        const applyScene = (): boolean => {
-          const scrollProgress = updateFromLayout();
-          const timeSeconds = performance.now() / 1000;
+  .btn-primary, .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
 
-          state.tx += (state.mx - state.tx) * 0.16;
-          state.ty += (state.my - state.ty) * 0.16;
-          state.x += (state.tx - state.x) * 0.08;
-          state.y += (state.ty - state.y) * 0.08;
+  .btn-primary {
+    background: var(--color-accent);
+    color: #0f1113;
+  }
 
-          const targetZoom = 1;
-          const targetRadius = active ? 116 : 126;
-          const targetBlur = (active ? 0.22 : 2.8) + scrollProgress * 6.4;
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(224, 101, 47, 0.3);
+  }
 
-          state.zoom += (targetZoom - state.zoom) * 0.065;
-          state.radius += (targetRadius - state.radius) * 0.065;
-          state.blur += (targetBlur - state.blur) * 0.075;
+  .btn-secondary {
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
 
-          stage.style.setProperty("--hero-model-scale", state.zoom.toFixed(3));
-          stage.style.setProperty("--hero-model-dynamic-blur", `${state.blur.toFixed(2)}px`);
-          stage.style.setProperty("--hero-model-obscure-opacity", `${(1 - scrollProgress * 0.5).toFixed(3)}`);
+  .btn-secondary:hover {
+    border-color: var(--color-text-muted);
+    background: rgba(255,255,255,0.03);
+  }
 
-          const thetaBase = -14 + state.x * 19;
-          const phiBase = 76 + state.y * -8;
-          const phi = clamp(phiBase, 58, 86);
-          models.forEach((model) => {
-            const group = model.dataset.heroGroup;
-            const orbitDrift = group === "rose" ? timeSeconds * 6.2 : 0;
-            const thetaOffset = group === "dragon" ? -6 : 7 + orbitDrift;
-            const phiOffset = group === "dragon" ? -3.2 : -2.4;
-            const radiusOffset = group === "dragon" ? 24 : -2;
-            const radius = `${(state.radius + radiusOffset).toFixed(1)}%`;
-            const theta = thetaBase + thetaOffset;
-            model.setAttribute(
-              "camera-orbit",
-              `${theta.toFixed(2)}deg ${clamp(phi + phiOffset, 58, 86).toFixed(2)}deg ${radius}`
-            );
-            if (group === "rose") {
-              lastOrbitTheta = theta;
-            }
-          });
+  .hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-          const settled =
-            Math.abs(state.mx - state.tx) < 0.001 &&
-            Math.abs(state.my - state.ty) < 0.001 &&
-            Math.abs(state.tx - state.x) < 0.001 &&
-            Math.abs(state.ty - state.y) < 0.001 &&
-            Math.abs(targetZoom - state.zoom) < 0.001 &&
-            Math.abs(targetRadius - state.radius) < 0.02 &&
-            Math.abs(targetBlur - state.blur) < 0.02 &&
-            Math.abs(((thetaBase + 7 + timeSeconds * 6.2) - lastOrbitTheta)) < 0.02;
+  .glow-backdrop {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle, rgba(224, 101, 47, 0.15) 0%, transparent 70%);
+    filter: blur(40px);
+    z-index: -1;
+  }
 
-          return !settled;
-        };
+  .hero-image {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+  }
 
-        const queueTick = (): void => {
-          if (rafId !== 0) {
-            return;
-          }
-
-          rafId = window.requestAnimationFrame(tick);
-        };
-
-        const setTargetFromPointer = (event: PointerEvent): void => {
-          const rect = hero.getBoundingClientRect();
-          if (rect.width < 1 || rect.height < 1) {
-            return;
-          }
-
-          const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-          const ny = ((event.clientY - rect.top) / rect.height) * 2 - 1;
-
-          state.mx = clamp(nx, -1, 1);
-          state.my = clamp(ny, -1, 1);
-          active = true;
-          queueTick();
-        };
-
-        const deactivate = (): void => {
-          active = false;
-          queueTick();
-        };
-
-        const onWindowBlur = (): void => {
-          deactivate();
-        };
-
-        const onResize = (): void => {
-          queueTick();
-        };
-
-        const onVisibility = (): void => {
-          if (document.hidden) {
-            deactivate();
-          }
-        };
-
-        const onPointerDown = (event: PointerEvent): void => {
-          setTargetFromPointer(event);
-        };
-
-        const onPointerMove = (event: PointerEvent): void => {
-          setTargetFromPointer(event);
-        };
-
-        const onPointerUp = (): void => {
-          deactivate();
-        };
-
-        const onPointerLeave = (): void => {
-          deactivate();
-        };
-
-        const tick = (): void => {
-          rafId = 0;
-
-          if (!document.body.contains(hero)) {
-            cleanup();
-            return;
-          }
-
-          if (applyScene()) {
-            queueTick();
-          }
-        };
-
-        const cleanup = (): void => {
-          window.cancelAnimationFrame(rafId);
-          hero.removeEventListener("pointerdown", onPointerDown);
-          hero.removeEventListener("pointermove", onPointerMove);
-          hero.removeEventListener("pointerup", onPointerUp);
-          hero.removeEventListener("pointercancel", onPointerUp);
-          hero.removeEventListener("pointerleave", onPointerLeave);
-          window.removeEventListener("blur", onWindowBlur);
-          window.removeEventListener("resize", onResize);
-          document.removeEventListener("visibilitychange", onVisibility);
-          window.removeEventListener("scroll", queueTick);
-          hero.dataset.heroBound = "false";
-        };
-
-        hero.addEventListener("pointerdown", onPointerDown, { passive: true });
-        hero.addEventListener("pointermove", onPointerMove, { passive: true });
-        hero.addEventListener("pointerup", onPointerUp, { passive: true });
-        hero.addEventListener("pointercancel", onPointerUp, { passive: true });
-        hero.addEventListener("pointerleave", onPointerLeave);
-        window.addEventListener("blur", onWindowBlur);
-        window.addEventListener("resize", onResize, { passive: true });
-        document.addEventListener("visibilitychange", onVisibility);
-        window.addEventListener("scroll", queueTick, { passive: true });
-
-        hero.dataset.heroBound = "true";
-        applyScene();
-      });
-    };
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", initHero, { once: true });
-    } else {
-      initHero();
+  @media (min-width: 64rem) {
+    .hero-grid {
+      grid-template-columns: 1fr 1fr;
+      padding: var(--space-6) 0;
     }
-
-    document.addEventListener("astro:after-swap", initHero);
-  })();
-</script>
+  }
+</style>

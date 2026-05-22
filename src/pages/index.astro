@@ -1,108 +1,128 @@
 ---
-import CallToAction from "../components/home/CallToAction.astro";
-import FeaturedWork from "../components/home/FeaturedWork.astro";
-import Hero from "../components/home/Hero.astro";
-import PeopleIntro from "../components/home/PeopleIntro.astro";
 import SiteLayout from "../components/layout/SiteLayout.astro";
+import Hero from "../components/home/Hero.astro";
+import FeaturedWork from "../components/home/FeaturedWork.astro";
+import CallToAction from "../components/home/CallToAction.astro";
 import Section from "../components/ui/Section.astro";
-import { getFeaturedWork, getPageContent } from "../lib/content";
-import type { Person } from "../types/ui";
+import { getPageContent } from "../lib/content";
 
-const home = await getPageContent("home");
-const about = await getPageContent("about");
-const gallery = await getPageContent("gallery");
-const contact = await getPageContent("contact");
-const featuredWork = await getFeaturedWork(3);
-
-if (!home.data.hero) {
-  throw new Error("Home page content requires a hero object in frontmatter.");
-}
-
-function parsePeople(markdown: string): Person[] {
-  const people: Person[] = [];
-  const lines = markdown.split("\n");
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed.startsWith("- ") || !trimmed.includes("|")) {
-      continue;
-    }
-
-    const [name, role, bio] = trimmed
-      .replace(/^-\s*/, "")
-      .split("|")
-      .map((part) => part.trim());
-
-    if (name && role && bio) {
-      people.push({ name, role, bio });
-    }
-  }
-
-  return people;
-}
-
-const people = parsePeople(about.body);
-const hero = home.data.hero;
-const dragonModelSrc = "/models/dragon.glb";
-const roseModelSrc = "/models/rose.glb";
+const page = await getPageContent("home");
 ---
 
 <SiteLayout
-  title={home.data.title}
-  description={home.data.description}
-  seoTitle={home.data.seoTitle}
-  seoDescription={home.data.seoDescription}
-  effectPreset="home"
+  title={page.data.title}
+  description={page.data.description}
+  seoTitle={page.data.seoTitle}
+  seoDescription={page.data.seoDescription}
 >
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  <script type="module" src="/scripts/white-hot-frame.js"></script>
+  <!-- 1. The Striking New Hero -->
+  <Hero />
 
-  <Hero
-    eyebrow={home.data.eyebrow}
-    title={hero.title}
-    subtitle={hero.subtitle}
-    primaryCta={{ href: hero.primaryCtaHref, label: hero.primaryCtaLabel }}
-    secondaryCta={
-      hero.secondaryCtaHref && hero.secondaryCtaLabel
-        ? { href: hero.secondaryCtaHref, label: hero.secondaryCtaLabel }
-        : undefined
-    }
-    dragonModelSrc={dragonModelSrc}
-    roseModelSrc={roseModelSrc}
-  />
-
-  <Section id="what-this-is" kicker="What This Is" title={home.data.title} lede={home.data.description}>
-    <p class="home-copy" data-reveal>{home.body}</p>
+  <!-- 2. The 3D Showroom Teaser to drive engagement -->
+  <Section id="showroom-teaser" kicker="Interactive" title="Virtual Exhibition" lede="Experience the depth, scale, and texture of the metalwork from anywhere.">
+    <div class="teaser-box" data-reveal>
+      <div class="teaser-content">
+        <h3>Explore the 3D Showroom</h3>
+        <p>Go beyond flat images. Rotate, zoom, and inspect pieces like the Dragon Catcher and Eternal Rose in a fully interactive 3D environment.</p>
+        <a href="/showroom" class="btn-primary mt-3">Enter Showroom</a>
+      </div>
+      <div class="teaser-visual">
+          <img src="/images/library/store/dragon catcher/dragon_catcher_1.jpg" alt="Dragon Catcher Detail" loading="lazy" class="teaser-img" />
+          <div class="badge">3D Available</div>
+      </div>
+    </div>
   </Section>
 
-  <FeaturedWork
-    title={gallery.data.title}
-    intro={gallery.data.description}
-    items={featuredWork}
-    ctaHref="/gallery"
-    ctaLabel="Browse available work"
-  />
+  <!-- 3. Existing Featured Work Carousel/Grid -->
+  <FeaturedWork />
 
-  <PeopleIntro
-    title={about.data.title}
-    body={about.data.description}
-    people={people}
-    artistImageSrc="/images/library/editorial/sheryl_john.png"
-    artistImageAlt="Sheryl and John in front of welded artwork"
-  />
+  <!-- Removed Affiliations Section -->
 
-  <CallToAction
-    title={contact.data.title}
-    body={contact.data.description}
-    buttonLabel="Start an Inquiry"
-    buttonHref="/contact"
-  />
+  <CallToAction />
 </SiteLayout>
 
 <style>
-  .home-copy {
-    max-width: 65ch;
+  /* Showroom Teaser Styles */
+  .teaser-box {
+    display: grid;
+    gap: var(--space-4);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .teaser-content h3 {
+    margin-bottom: var(--space-2);
+    font-size: 1.5rem;
+  }
+
+  .teaser-content p {
     color: var(--color-text-muted);
-    font-size: 1.03rem;
+    margin-bottom: var(--space-4);
+    max-width: 50ch;
+  }
+
+  .mt-3 {
+    margin-top: var(--space-3);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.72rem 1.25rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    background: var(--color-accent);
+    color: #0f1113;
+    transition: transform 0.2s ease;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+  }
+
+  .teaser-visual {
+    position: relative;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    aspect-ratio: 16/9;
+  }
+
+  .teaser-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+
+  .teaser-box:hover .teaser-img {
+    opacity: 1;
+  }
+
+  .badge {
+    position: absolute;
+    bottom: var(--space-3);
+    right: var(--space-3);
+    background: rgba(0,0,0,0.8);
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(4px);
+  }
+
+  @media (min-width: 48rem) {
+    .teaser-box {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: var(--space-5);
+    }
   }
 </style>
