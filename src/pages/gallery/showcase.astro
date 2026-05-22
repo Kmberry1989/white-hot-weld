@@ -1,0 +1,159 @@
+---
+import SiteLayout from "../../components/layout/SiteLayout.astro";
+import Section from "../../components/ui/Section.astro";
+import { Image } from "astro:assets";
+
+// Import local assets (optimized by Astro)
+import blueQuench from "../../assets/work/blue-quench.png";
+import emberArch from "../../assets/work/ember-arch.png";
+import weldedDawn from "../../assets/work/welded-dawn.png";
+import dragonCatcher from "../../assets/work/dragon-catcher.jpg";
+
+// Combine local imports with clean public store images
+const curatedGallery = [
+  { image: blueQuench, alt: "Blue Quench", isLocal: true },
+  { image: emberArch, alt: "Ember Arch", isLocal: true },
+  { image: weldedDawn, alt: "Welded Dawn", isLocal: true },
+  { image: dragonCatcher, alt: "Dragon Catcher", isLocal: true },
+  { image: "/images/library/store/dragon catcher/dragon_catcher_1.jpg", alt: "Dragon Catcher Detail 1", isLocal: false },
+  { image: "/images/library/store/dragon catcher/dragon_catcher_2.jpg", alt: "Dragon Catcher Detail 2", isLocal: false },
+  { image: "/images/library/store/dragon catcher/dragon_catcher_3.jpg", alt: "Dragon Catcher Detail 3", isLocal: false },
+  { image: "/images/library/store/dragon catcher/dragon_catcher_5.jpg", alt: "Dragon Catcher Detail 5", isLocal: false }
+];
+---
+
+<SiteLayout
+  title="Curated Showcase"
+  description="A minimalist showcase of metal artworks featured on solid backgrounds."
+  seoTitle="Showcase | White Hot Weld"
+  seoDescription="View the curated White Hot Weld showcase."
+>
+  <Section id="showcase" kicker="Exhibition" title="Curated Showcase" lede="Highlighting the structural details and textures of finished metalworks.">
+    
+    <div class="actions" data-reveal>
+      <a class="secondary" href="/gallery">View full shop</a>
+    </div>
+
+    <div class="masonry-grid" data-reveal>
+      {curatedGallery.map((item) => (
+        <div class="masonry-item">
+          {item.isLocal ? (
+            <Image 
+              src={item.image as ImageMetadata} 
+              alt={item.alt} 
+              width={800} 
+              class="artwork"
+            />
+          ) : (
+            <img 
+              src={item.image as string} 
+              alt={item.alt} 
+              loading="lazy" 
+              class="artwork"
+            />
+          )}
+          <div class="overlay">
+            <span class="label">{item.alt}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+  </Section>
+</SiteLayout>
+
+<style>
+  .actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+
+  .secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px; /* Pill shape for minimalist feel */
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+  }
+
+  .secondary:hover {
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  /* Masonry Layout */
+  .masonry-grid {
+    column-count: 1;
+    column-gap: var(--space-4);
+    margin-top: var(--space-5);
+  }
+
+  @media (min-width: 48rem) {
+    .masonry-grid {
+      column-count: 2;
+    }
+  }
+
+  @media (min-width: 72rem) {
+    .masonry-grid {
+      column-count: 3;
+    }
+  }
+
+  .masonry-item {
+    break-inside: avoid;
+    margin-bottom: var(--space-4);
+    position: relative;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: #f8f9fa; /* Slight off-white to ground transparent PNGs */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0,0,0,0.03);
+  }
+
+  /* Subtly scale the image on hover to draw the eye into the metal texture */
+  .artwork {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .masonry-item:hover .artwork {
+    transform: scale(1.03);
+  }
+
+  /* Elegant fade-in title overlay */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 40%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex;
+    align-items: flex-end;
+    padding: var(--space-4);
+    pointer-events: none;
+  }
+
+  .masonry-item:hover .overlay {
+    opacity: 1;
+  }
+
+  .label {
+    color: #ffffff;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    font-size: 0.95rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+</style>
