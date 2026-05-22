@@ -1,0 +1,234 @@
+---
+import SiteLayout from "../components/layout/SiteLayout.astro";
+import Section from "../components/ui/Section.astro";
+
+// These match the existing .glb files in your public/models/ directory
+const models = [
+  {
+    id: "dragon",
+    name: "Dragon Catcher",
+    src: "/models/dragon.glb",
+    alt: "Interactive 3D scan of the Dragon Catcher metal sculpture"
+  },
+  {
+    id: "motorcycle",
+    name: "Welded Motorcycle",
+    src: "/models/motorcycle.glb",
+    alt: "Interactive 3D scan of a welded motorcycle sculpture"
+  },
+  {
+    id: "rose",
+    name: "Eternal Rose",
+    src: "/models/rose.glb",
+    alt: "Interactive 3D scan of a welded metal rose"
+  }
+];
+---
+
+<SiteLayout
+  title="3D Showroom"
+  description="Explore White Hot Weld sculptures in interactive 3D. Rotate and zoom to see the intricate details of the metalwork."
+  seoTitle="3D Virtual Showroom | White Hot Weld"
+  seoDescription="Experience our metal sculptures in full 3D. An interactive exhibition of White Hot Weld creations."
+>
+  <!-- Load Google's model-viewer component -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <Section id="virtual-showroom" kicker="Virtual Exhibition" title="3D Showroom" lede="Experience the depth and structure of the work. Use your mouse or touch screen to rotate and zoom.">
+    
+    <div class="showroom-container" data-reveal>
+      
+      <!-- The main 3D viewer canvas -->
+      <div class="viewer-wrapper">
+        <model-viewer
+          id="main-viewer"
+          src={models[0].src}
+          alt={models[0].alt}
+          camera-controls
+          auto-rotate
+          rotation-per-second="30deg"
+          shadow-intensity="1.5"
+          shadow-softness="1"
+          exposure="1.2"
+          environment-image="neutral"
+          interaction-prompt="auto"
+          class="model-canvas"
+        >
+          <div slot="progress-bar" class="progress-bar"></div>
+        </model-viewer>
+      </div>
+
+      <!-- Controls to swap models -->
+      <div class="model-selector">
+        <h3 class="selector-title">Select a piece to view:</h3>
+        <div class="button-group">
+          {models.map((model, index) => (
+            <button 
+              class={`model-btn ${index === 0 ? 'active' : ''}`}
+              data-src={model.src}
+              data-alt={model.alt}
+              aria-label={`View ${model.name}`}
+            >
+              {model.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+    </div>
+
+  </Section>
+</SiteLayout>
+
+<script>
+  // Client-side logic to handle model swapping
+  document.addEventListener('DOMContentLoaded', () => {
+    const viewer = document.getElementById('main-viewer');
+    const buttons = document.querySelectorAll('.model-btn');
+
+    if (!viewer) return;
+
+    buttons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const target = e.currentTarget;
+        
+        // Update active button styling
+        buttons.forEach(btn => btn.classList.remove('active'));
+        target.classList.add('active');
+
+        // Swap the 3D model source and alt text
+        const newSrc = target.getAttribute('data-src');
+        const newAlt = target.getAttribute('data-alt');
+        
+        viewer.setAttribute('src', newSrc);
+        viewer.setAttribute('alt', newAlt);
+        
+        // Reset camera position for the new model
+        viewer.cameraOrbit = "auto auto auto";
+      });
+    });
+  });
+</script>
+
+<style>
+  .showroom-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    margin-top: var(--space-4);
+  }
+
+  .viewer-wrapper {
+    width: 100%;
+    height: 60vh;
+    min-height: 400px;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.2) 100%);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+  }
+
+  .model-canvas {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    --poster-color: transparent;
+  }
+
+  /* Custom Loading Bar for the 3D model */
+  .progress-bar {
+    display: block;
+    width: 33%;
+    height: 3px;
+    max-height: 2%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    border-radius: 3px;
+    box-shadow: 0px 0px 8px rgba(224, 101, 47, 0.5);
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: visibility 0.3s;
+  }
+
+  .progress-bar.update-bar {
+    background-color: var(--color-accent);
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  .model-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .selector-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+
+  .model-btn {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .model-btn:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  .model-btn.active {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #0f1113; /* Dark text for contrast against the orange/accent */
+    box-shadow: 0 4px 12px rgba(224, 101, 47, 0.2);
+  }
+
+  @media (min-width: 64rem) {
+    .showroom-container {
+      flex-direction: row-reverse;
+      align-items: start;
+    }
+
+    .viewer-wrapper {
+      flex: 1;
+      height: 75vh;
+    }
+
+    .model-selector {
+      width: 250px;
+      align-items: flex-start;
+      padding-top: var(--space-4);
+    }
+
+    .button-group {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .model-btn {
+      width: 100%;
+      text-align: left;
+    }
+  }
+</style>
